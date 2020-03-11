@@ -14,32 +14,29 @@
 
 PG_MODULE_MAGIC;
 
-typedef struct Complex
+typedef struct PersonName
 {
-	double		x;
-	double		y;
-}			Complex;
+	int     i;
+	char	pname(1);
+}			personName;
 
 
 /*****************************************************************************
  * Input/Output functions
  *****************************************************************************/
 
-PG_FUNCTION_INFO_V1(complex_in);
+PG_FUNCTION_INFO_V1(pname_in);
 
 Datum
-complex_in(PG_FUNCTION_ARGS)
+pname_in(PG_FUNCTION_ARGS)
 {
 	char	   *str = PG_GETARG_CSTRING(0);
-	double		x,
-				y;
-	Complex    *result;
 
 	if (sscanf(str, " ( %lf , %lf )", &x, &y) != 2)
 		ereport(ERROR,
 				(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
 				 errmsg("invalid input syntax for type %s: \"%s\"",
-						"complex", str)));
+						"pname", str)));
 
 	result = (Complex *) palloc(sizeof(Complex));
 	result->x = x;
