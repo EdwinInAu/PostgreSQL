@@ -379,12 +379,11 @@ given(PG_FUNCTION_ARGS)
 
 	int len_x = strlen(x->person_name);
 
-	char *person_name_x = x->person_name;
+	// char *person_name_x = x->person_name;
 
 	int index_x = 0;
-	char *given_name_x;
-	char *result;
-
+	// char *given_name_x;
+	char *result = palloc(sizeof(char *) * strlen(x->person_name));
 	// get the index of comma of the person name x
 	for(int i = 0; i < len_x; i++){
 		if(x->person_name[i] == ','){
@@ -400,13 +399,14 @@ given(PG_FUNCTION_ARGS)
 	}
 
 	// get the given name of x
-	strncpy(given_name_x, person_name_x + index_x + 1, len_x - index_x - 1);
-	result = psprintf("%s",given_name_x);
+	strncpy(result,  &( x-> person_name[index_x+1]), len_x - index_x - 1);
+	// result = psprintf("%s",given_name_x);
 
 	PG_RETURN_CSTRING(result);
 }
 
 PG_FUNCTION_INFO_V1(show);
+
 
 Datum
 // return the family part of a name
@@ -416,11 +416,13 @@ show(PG_FUNCTION_ARGS)
 
 	int len_x = strlen(x->person_name);
 
-	char *person_name_x = x->person_name;
+	// char *person_name_x = x->person_name;
 
 	int index_x = 0;
-	char *family_name_x;
+
 	char *result;
+	char *family_name_x = palloc(sizeof(char *) * strlen(x->person_name));
+	char *given_name_x = palloc(sizeof(char *) * strlen(x->person_name));
 
 	// get the index of comma of the person name x
 	for(int i = 0; i < len_x; i++){
@@ -431,11 +433,42 @@ show(PG_FUNCTION_ARGS)
 	}
 
 
-
 	// get the family name of x
-	strncpy(family_name_x, person_name_x, index_x);
+	strncpy(family_name_x, &( x-> person_name[0]), index_x);
 
-	result = psprintf("%s",family_name_x);
+
+	// get the given name of x
+	strncpy(given_name_x,  &( x-> person_name[index_x+1]), len_x - index_x - 1);
+
+	// if there is a space after comma
+	if(x->person_name[index_x + 1] == ' '){
+		given_name_x++;
+	}
+
+	for(int j = 0; j < strlen(given_name_x); j++){
+		if(given_name_x[j] == ' '){
+			given_name_x[j] = '\0';
+			break; 
+		}
+	}
+
+	//+2  1 for the zero-terminator, 1 for the space in the middle
+    char *full_name = malloc(strlen(family_name_x)+strlen(given_name_x)+2);
+
+	if (full_name == NULL){ 
+		exit (1);
+	}
+
+	// combine given_name, space and family_name
+	// e.g. Given Family
+    strcpy(full_name, given_name_x);
+
+    // strcat(full_name, space);
+	strcat(full_name, family_name_x);
+
+
+
+	result = psprintf("%s",full_name);
 
 	PG_RETURN_CSTRING(result);
 }
@@ -452,6 +485,7 @@ person_name_hash(PG_FUNCTION_ARGS){
 	int len_x = strlen(x->person_name);
 
 	int index_x = 0;
+	char *person_name_x = x->person_name;
 
 	// get the index of comma of the person name x
 	for(int i = 0; i < len_x; i++){
@@ -461,22 +495,21 @@ person_name_hash(PG_FUNCTION_ARGS){
 		}
 	}
 
-	//delete space after comma
-	if(x->person_name[index_x + 1] == ' '){
 
-		char *tmp_a = x->person_name;
-		char *tmp_b = x->person_name;
 
-		for(int j = 0; j < len_x; j++){
-			if( j != index_x + 1){
-				*tmp_a++ = *tmp_b;
-				*tmp_a = '\0';
-			}
-			tmp_b++;
-		}
-		
-	}
+	///delete space after comma
+	// if(x->person_name[index_x + 1] == ' '){
 
-	hash_number = DatumGetUInt32(hash_any((unsigned char *) x->person_name, len_x));
+	// 	char *tmp_a = x->person_name;
+
+	// 	for(int j = 0; j < len_x; j++){
+	// 		if( j != index_x + 1){
+	// 			*tmp_a++ = *person_name_x;
+	// 		}
+	// 		person_name_x++;
+	// 	}
+	// 	*tmp_a =  '/0';
+	// }
+	hash_number = DatumGetUInt32(hash_any((unsigned char *) person_name_x, len_x));
 	PG_RETURN_INT32(hash_number); 
 }
