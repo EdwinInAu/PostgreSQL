@@ -10,7 +10,7 @@
 #include "postgres.h"
 
 #include "fmgr.h"
-#include "libpq/pqformat.h"		/* needed for send/recv functions */
+#include "libpq/pqformat.h"			/* needed for send/recv functions */
 #include <ctype.h>
 #include <string.h>
 #include "access/hash.h"
@@ -52,7 +52,7 @@ int check_input(char *string){
 		}
 		// after a space or "-", there is no upper-case letter
 		if(string[i] == ' ' || string[i] == '-'){
-			if(!isupper(*string[i+1])){
+			if(!isupper(string[i+1])){
 				return 0;
 			}
 		} 
@@ -66,7 +66,7 @@ int check_input(char *string){
 		return 0;
 	}
 	// if the family name dose not begin with an upper-case letter
-	if(!isupper(string[0]){
+	if(!isupper(string[0])){
 		return 0;
 	}  
 	// if there is more than one space after the comma
@@ -101,6 +101,7 @@ int check_input(char *string){
 		return 0;
 	}
 	return 1;
+}
 }
 
 
@@ -204,6 +205,7 @@ int person_name_compare(PersonName *x, PersonName *y){
 	char *given_name_y;
 
 	char *family_name_result;
+	char *given_name_result;
 
 	int index_x = 0;
 	int index_y = 0;
@@ -323,17 +325,17 @@ person_name_greater_than(PG_FUNCTION_ARGS)
  * 
  *****************************************************************************/
 
-PG_FUNCTION_INFO_V1(person_name_compare);
+// PG_FUNCTION_INFO_V1(person_name_compare);
 
-Datum
-// compare: person name x and person name y
-person_name_compare(PG_FUNCTION_ARGS)
-{
-	PersonName    *x = (PersonName *) PG_GETARG_POINTER(0);
-	PersonName    *y = (PersonName *) PG_GETARG_POINTER(1);
+// Datum
+// // compare: person name x and person name y
+// person_name_compare(PG_FUNCTION_ARGS)
+// {
+// 	PersonName    *x = (PersonName *) PG_GETARG_POINTER(0);
+// 	PersonName    *y = (PersonName *) PG_GETARG_POINTER(1);
 
-	PG_RETURN_INT32(person_name_compare(x, y));
-}
+// 	PG_RETURN_INT32(person_name_compare(x, y));
+// }
 
 PG_FUNCTION_INFO_V1(family);
 
@@ -342,12 +344,11 @@ Datum
 family(PG_FUNCTION_ARGS)
 {
 	PersonName    *x = (PersonName *) PG_GETARG_POINTER(0);
-
 	int len_x = strlen(x->person_name);
-
 	char *person_name_x = x->person_name;
-
 	int index_x = 0;
+	char *family_name_x;
+	char *result;
 
 	// get the index of comma of the person name x
 	for(int i = 0; i < len_x; i++){
@@ -357,8 +358,7 @@ family(PG_FUNCTION_ARGS)
 		}
 	}
 
-	char *family_name_x;
-	char *result;
+
 
 	// get the family name of x
 	strncpy(family_name_x, person_name_x, index_x);
@@ -470,6 +470,7 @@ person_name_hash(PG_FUNCTION_ARGS){
 		for(int j = 0; j < len_x; j++){
 			if( j != index_x + 1){
 				*tmp_a++ = *tmp_b;
+				*tmp_a = '\0';
 			}
 			tmp_b++;
 		}
