@@ -30,7 +30,6 @@ int check_input(char *string){
 
 	int len = strlen(string);
 	int comma = 0;
-	int number = 0;
 	int index = 0;
 	int comma_number = 0;
 	char *title_a = "Dr";
@@ -200,8 +199,8 @@ int person_name_compare(PersonName *x, PersonName *y){
 	char *given_name_x;
 	char *given_name_y;
 
-	char *family_name_result;
-	char *given_name_result;
+	int family_name_result;
+	int given_name_result;
 
 	int index_x = 0;
 	int index_y = 0;
@@ -226,7 +225,7 @@ int person_name_compare(PersonName *x, PersonName *y){
 	strncpy(family_name_x, person_name_x, index_x);
 	strncpy(family_name_y, person_name_y, index_y);
 
-	family_name_result = strcmp(family_name_x,family_name_y)
+	family_name_result = strcmp(family_name_x,family_name_y);
 
 	// get the given name of x and y
 	strncpy(given_name_x, person_name_x + index_x + 1, len_x - index_x - 1);
@@ -437,13 +436,11 @@ show(PG_FUNCTION_ARGS)
 	}
 
 	for(int j = 0; j < strlen(given_name_x); j++){
-		if(given_name[j] == ' '){
-			given_name[j] = '/0';
+		if(given_name_x[j] == ' '){
+			given_name_x[j] = '/0';
 			break; 
 		}
 	}
-
-	char space = ' ';
 
 	//+2  1 for the zero-terminator, 1 for the space in the middle
     char *full_name = malloc(strlen(family_name_x)+strlen(given_name_x)+2);
@@ -456,12 +453,12 @@ show(PG_FUNCTION_ARGS)
 	// e.g. Given Family
     strcpy(full_name, given_name_x);
 
-    strcat(full_name, space);
+    // strcat(full_name, space);
 	strcat(full_name, family_name_x);
 
 	char *result;
 
-	result = psprintf("%s",full_name)
+	result = psprintf("%s",full_name);
 
 	PG_RETURN_CSSTRING(result);
 }
@@ -490,18 +487,18 @@ person_name_hash(PG_FUNCTION_ARGS){
 	char *person_name_x = x->person_name;
 
 	///delete space after comma
-	if(x->person_name[index_x + 1] == ' '){
+	// if(x->person_name[index_x + 1] == ' '){
 
-		char *tmp_a = x->person_name;
+	// 	char *tmp_a = x->person_name;
 
-		for(int j = 0; j < len_x; j++){
-			if( j != index_x + 1){
-				*tmp_a++ = *person_name_x;
-			}
-			person_name_x++;
-		}
-		*tmp_a =  '/0';
-	}
+	// 	for(int j = 0; j < len_x; j++){
+	// 		if( j != index_x + 1){
+	// 			*tmp_a++ = *person_name_x;
+	// 		}
+	// 		person_name_x++;
+	// 	}
+	// 	*tmp_a =  '/0';
+	// }
 	hash_number = DatumGetUInt32(hash_any((unsigned char *) person_name_x, len_x));
 	PG_RETURN_INT32(hash_number); 
 }
