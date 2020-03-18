@@ -24,9 +24,7 @@ typedef struct person
 }PersonName;
 
 int check_input(char *string);
-int person_name_judge_equal(PersonName *x, PersonName *y);
-
-
+int person_name_compare(PersonName *x, PersonName *y);
 
 int check_input(char *string){
 
@@ -93,7 +91,7 @@ int check_input(char *string){
 		return 0;
 	}
 	// if the string includes "Dr", "Prof","Mr" or "Ms
-	if((strstr(string,title_a)!=NULL)||(strstr(string,title_b)!=NULL)||(strstr(string,title_c) != NULL)||(strstr(string,title_d) != NULL)){      {
+	if((strstr(string,title_a)!=NULL)||(strstr(string,title_b)!=NULL)||(strstr(string,title_c) != NULL)||(strstr(string,title_d) != NULL)){
 		return 0;
 	}
 	// E.g. Ab,Cd minmum valid length is equal to 5
@@ -102,8 +100,6 @@ int check_input(char *string){
 	}
 	return 1;
 }
-}
-
 
 /*****************************************************************************
  * Input/Output functions
@@ -358,8 +354,6 @@ family(PG_FUNCTION_ARGS)
 		}
 	}
 
-
-
 	// get the family name of x
 	strncpy(family_name_x, person_name_x, index_x);
 
@@ -430,12 +424,44 @@ show(PG_FUNCTION_ARGS)
 	}
 
 	char *family_name_x;
-	char *result;
-
 	// get the family name of x
 	strncpy(family_name_x, person_name_x, index_x);
 
-	result = psprintf("%s",family_name_x);
+	char *given_name_x;
+	// get the given name of x
+	strncpy(given_name_x, person_name_x + index_x + 1, len_x - index_x - 1);
+
+	// if there is a space after comma
+	if(x->person_name[index_x + 1] == ' '){
+		given_name_x++;
+	}
+
+	for(int j = 0; j < strlen(given_name_x); j++){
+		if(given_name[j] == ' '){
+			given_name[j] = '/0';
+			break; 
+		}
+	}
+
+	char space = ' ';
+
+	//+2  1 for the zero-terminator, 1 for the space in the middle
+    char *full_name = malloc(strlen(family_name_x)+strlen(given_name_x)+2);
+
+	if (full_name == NULL){ 
+		exit (1);
+	}
+
+	// combine given_name, space and family_name
+	// e.g. Given Family
+    strcpy(full_name, given_name_x);
+
+    strcat(full_name, space);
+	strcat(full_name, family_name_x);
+
+	char *result;
+
+	result = psprintf("%s",full_name)
 
 	PG_RETURN_CSSTRING(result);
 }
@@ -461,22 +487,21 @@ person_name_hash(PG_FUNCTION_ARGS){
 		}
 	}
 
-	//delete space after comma
+	char *person_name_x = x->person_name;
+
+	///delete space after comma
 	if(x->person_name[index_x + 1] == ' '){
 
 		char *tmp_a = x->person_name;
-		char *tmp_b = x->person_name;
 
 		for(int j = 0; j < len_x; j++){
 			if( j != index_x + 1){
-				*tmp_a++ = *tmp_b;
-				*tmp_a = '\0';
+				*tmp_a++ = *person_name_x;
 			}
-			tmp_b++;
+			person_name_x++;
 		}
-		
+		*tmp_a =  '/0';
 	}
-
-	hash_number = DatumGetUInt32(hash_any((unsigned char *) x->person_name, len_x));
+	hash_number = DatumGetUInt32(hash_any((unsigned char *) person_name_x, len_x));
 	PG_RETURN_INT32(hash_number); 
 }
