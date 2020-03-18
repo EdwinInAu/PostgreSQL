@@ -32,7 +32,7 @@ int person_name_compare(PersonName *x, PersonName *y);
 int check_input(char *string){
 
 	int len = strlen(string);
-	int comma = 0;
+	int comma_number = 0;
 	int index = 0;
 	char *title_a = "Dr";
 	char *title_b = "Prof";
