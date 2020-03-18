@@ -499,6 +499,6 @@ person_name_hash(PG_FUNCTION_ARGS){
 	// 	}
 	// 	*tmp_a =  '/0';
 	// }
-	hash_number = DatumGetUInt32(hash_any((unsigned char *) person_name_x, len_x));
+	int hash_number = DatumGetUInt32(hash_any((unsigned char *) person_name_x, len_x));
 	PG_RETURN_INT32(hash_number); 
 }
