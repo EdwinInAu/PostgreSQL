@@ -69,7 +69,7 @@ CREATE TYPE PersonName (
    input = pname_in,
    output = pname_out,
    receive = pname_recv,
-   send = pname_send,
+   send = pname_send
 );
 
 ----------------------------- 
