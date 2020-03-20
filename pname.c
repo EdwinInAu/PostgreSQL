@@ -46,7 +46,7 @@ int check_input(char *string){
 			comma_number++;
 			index = i;
 		}
-		if(string[i] != ' ' && string[i] != ',' && string[i] != '-' && !isalpha(string[i])){
+		if(string[i] != ' ' && string[i] != ',' && string[i] != '-' && string[i] != ''' &&!isalpha(string[i])){
 			return 0;
 		}
 		if(isdigit(string[i])){
