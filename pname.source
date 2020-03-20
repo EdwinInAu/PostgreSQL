@@ -163,4 +163,4 @@ CREATE OPERATOR CLASS person_name_ops2
         OPERATOR        3       >= ,
         OPERATOR        4       > ,
         OPERATOR        5       <> ,
-        FUNCTIOn        1       person_name_compare(PersonName,PersonName);
+        FUNCTION        1       person_name_compare(PersonName,PersonName);
