@@ -147,7 +147,7 @@ AS '_OBJWD_/pname' LANGUAGE C IMMUTABLE STRICT;
 CREATE FUNCTION person_name_hash(PersonName) RETURNS int4
 AS '_OBJWD_/pname' LANGUAGE C IMMUTABLE STRICT;
 
-CREATE FUNCTION person_name_compare(PersonName,PersonName) RETURNS int4
+CREATE FUNCTION person_name_cmp(PersonName,PersonName) RETURNS int4
 AS '_OBJWD_/pname' LANGUAGE C IMMUTABLE STRICT;
 
 -- now we can make the operator class
@@ -163,4 +163,4 @@ CREATE OPERATOR CLASS person_name_ops2
         OPERATOR        3       >= ,
         OPERATOR        4       > ,
         OPERATOR        5       <> ,
-        FUNCTION        1       person_name_compare(PersonName,PersonName);
+        FUNCTION        1       person_name_cmp(PersonName,PersonName);

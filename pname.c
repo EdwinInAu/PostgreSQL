@@ -275,6 +275,17 @@ int person_name_compare(PersonName *x, PersonName *y){
 	return 0;
 }
 
+PG_FUNCTION_INFO_V1(person_name_cmp);
+
+Datum
+person_name_cmp(PG_FUNCTION_ARGS)
+{
+	PersonName    *x = (PersonName *) PG_GETARG_POINTER(0);
+	PersonName    *y = (PersonName *) PG_GETARG_POINTER(1);
+		
+	PG_RETURN_BOOL(person_name_compare(x, y));
+}
+
 PG_FUNCTION_INFO_V1(person_name_less_than);
 
 Datum
@@ -284,7 +295,7 @@ person_name_less_than(PG_FUNCTION_ARGS)
 	PersonName    *x = (PersonName *) PG_GETARG_POINTER(0);
 	PersonName    *y = (PersonName *) PG_GETARG_POINTER(1);
 
-	PG_RETURN_BOOL(person_name_compare(x, y) < 0);
+	PG_RETURN_BOOL(person_name_cmp(x, y) < 0);
 }
 
 PG_FUNCTION_INFO_V1(person_name_less_than_or_equal);
@@ -296,7 +307,7 @@ person_name_less_than_or_equal(PG_FUNCTION_ARGS)
 	PersonName    *x = (PersonName *) PG_GETARG_POINTER(0);
 	PersonName    *y = (PersonName *) PG_GETARG_POINTER(1);
 
-	PG_RETURN_BOOL(person_name_compare(x, y) <= 0);
+	PG_RETURN_BOOL(person_name_cmp(x, y) <= 0);
 }
 
 PG_FUNCTION_INFO_V1(person_name_equal);
@@ -308,7 +319,7 @@ person_name_equal(PG_FUNCTION_ARGS)
 	PersonName    *x = (PersonName *) PG_GETARG_POINTER(0);
 	PersonName    *y = (PersonName *) PG_GETARG_POINTER(1);
 
-	PG_RETURN_BOOL(person_name_compare(x, y) == 0);
+	PG_RETURN_BOOL(person_name_cmp(x, y) == 0);
 }
 
 PG_FUNCTION_INFO_V1(person_name_greater_than_or_equal);
@@ -320,11 +331,10 @@ person_name_greater_than_or_equal(PG_FUNCTION_ARGS)
 	PersonName    *x = (PersonName *) PG_GETARG_POINTER(0);
 	PersonName    *y = (PersonName *) PG_GETARG_POINTER(1);
 
-	PG_RETURN_BOOL(person_name_compare(x, y) >= 0);
+	PG_RETURN_BOOL(person_name_cmp(x, y) >= 0);
 }
 
 PG_FUNCTION_INFO_V1(person_name_greater_than);
-
 Datum
 // greater than: person name x > person name y
 person_name_greater_than(PG_FUNCTION_ARGS)
@@ -332,7 +342,7 @@ person_name_greater_than(PG_FUNCTION_ARGS)
 	PersonName    *x = (PersonName *) PG_GETARG_POINTER(0);
 	PersonName    *y = (PersonName *) PG_GETARG_POINTER(1);
 
-	PG_RETURN_BOOL(person_name_compare(x, y) > 0);
+	PG_RETURN_BOOL(person_name_cmp(x, y) > 0);
 }
 
 PG_FUNCTION_INFO_V1(person_name_unequal);
@@ -344,7 +354,7 @@ person_name_unequal(PG_FUNCTION_ARGS)
 	PersonName    *x = (PersonName *) PG_GETARG_POINTER(0);
 	PersonName    *y = (PersonName *) PG_GETARG_POINTER(1);
 
-	PG_RETURN_BOOL(person_name_compare(x, y) != 0);
+	PG_RETURN_BOOL(person_name_cmp(x, y) != 0);
 }
 
 /*****************************************************************************
