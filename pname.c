@@ -46,7 +46,7 @@ int check_input(char *string){
 			comma_number++;
 			index = i;
 		}
-		if(string[i] != ' ' && string[i] != ',' && string[i] != '-' && string[i] != '\'' &&!isalpha(string[i])){
+		if(string[i] != ' ' && string[i] != ',' && string[i] != '-' && string[i] != '\'' && !isalpha(string[i])){
 			return 0;
 		}
 		if(isdigit(string[i])){
@@ -54,7 +54,7 @@ int check_input(char *string){
 		}
 		// after a space or "-", there is no upper-case letter
 		if(string[i] == ' ' || string[i] == '-'){
-			if(!isupper(string[i+1])){
+			if(isalpha(string[i+1]) && !isupper(string[i+1])){
 				return 0;
 			}
 		} 
