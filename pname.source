@@ -49,18 +49,18 @@ CREATE FUNCTION pname_out(PersonName)
 -- the binary input function 'pname_recv' takes a StringInfo buffer
 -- and turns its contents into the internal representation.
 
--- CREATE FUNCTION pname_recv(internal)
---   RETURNS PersonName
---   AS '_OBJWD_/pname'
---   LANGUAGE C IMMUTABLE STRICT;
+CREATE FUNCTION pname_recv(internal)
+    RETURNS PersonName
+    AS '_OBJWD_/pname'
+    LANGUAGE C IMMUTABLE STRICT;
 
 -- the binary output function 'pname_send' takes the internal representation
 -- and converts it into a (hopefully) platform-independent bytea string.
 
--- CREATE FUNCTION pname_send(PersonName)
---   RETURNS bytea
---   AS '_OBJWD_/pname'
---   LANGUAGE C IMMUTABLE STRICT;
+CREATE FUNCTION pname_send(PersonName)
+    RETURNS bytea
+    AS '_OBJWD_/pname'
+    LANGUAGE C IMMUTABLE STRICT;
 
 -- now, we can create the type. The internallength is variable-sized. 
 
@@ -68,8 +68,8 @@ CREATE TYPE PersonName (
    internallength = variable,
    input = pname_in,
    output = pname_out,
-   --receive = pname_recv,
-   --send = pname_send,
+   receive = pname_recv,
+   send = pname_send
 );
 
 ----------------------------- 
@@ -94,6 +94,9 @@ CREATE FUNCTION person_name_greater_than_or_equal(PersonName, PersonName) RETURN
    AS '_OBJWD_/pname' LANGUAGE C IMMUTABLE STRICT;
 
 CREATE FUNCTION person_name_greater_than(PersonName, PersonName) RETURNS bool
+   AS '_OBJWD_/pname' LANGUAGE C IMMUTABLE STRICT;
+
+CREATE FUNCTION person_name_unequal(PersonName, PersonName) RETURNS bool
    AS '_OBJWD_/pname' LANGUAGE C IMMUTABLE STRICT;
 
 CREATE OPERATOR < (
@@ -123,25 +126,41 @@ CREATE OPERATOR > (
    commutator = < , negator = <= ,
    restrict = scalargtsel, join = scalargtjoinsel
 );
+CREATE OPERATOR <> (
+   leftarg = PersonName, rightarg = PersonName, procedure = person_name_unequal,
+   commutator = <> ,
+   negator = = ,
+   restrict = neqsel, join = neqjoinsel
+);
 
 -- create the support function too
--- CREATE FUNCTION person_name_compare(PersonName, PersonName) RETURNS int4
---   AS '_OBJWD_/pname' LANGUAGE C IMMUTABLE STRICT;
 
-CREATE FUNCTION family(PersonName) RETURNS cstring
+CREATE FUNCTION family(PersonName) RETURNS text
    AS '_OBJWD_/pname' LANGUAGE C IMMUTABLE STRICT;
 
-CREATE FUNCTION given(PersonName) RETURNS cstring
+CREATE FUNCTION given(PersonName) RETURNS text
 AS '_OBJWD_/pname' LANGUAGE C IMMUTABLE STRICT;
 
-CREATE FUNCTION show(PersonName) RETURNS cstring
+CREATE FUNCTION show(PersonName) RETURNS text
 AS '_OBJWD_/pname' LANGUAGE C IMMUTABLE STRICT;
 
 CREATE FUNCTION person_name_hash(PersonName) RETURNS int4
 AS '_OBJWD_/pname' LANGUAGE C IMMUTABLE STRICT;
 
+CREATE FUNCTION person_name_cmp(PersonName,PersonName) RETURNS int4
+AS '_OBJWD_/pname' LANGUAGE C IMMUTABLE STRICT;
+
 -- now we can make the operator class
-CREATE OPERATOR CLASS person_name_ops
+CREATE OPERATOR CLASS person_name_ops1
     DEFAULT FOR TYPE PersonName USING hash AS
         OPERATOR        1       = ,
         FUNCTION        1       person_name_hash(PersonName);
+
+CREATE OPERATOR CLASS person_name_ops2
+    DEFAULT FOR TYPE PersonName USING btree AS
+        OPERATOR        1       < ,
+        OPERATOR        2       <= ,
+        OPERATOR        3       >= ,
+        OPERATOR        4       > ,
+        OPERATOR        5       <> ,
+        FUNCTION        1       person_name_cmp(PersonName,PersonName);
