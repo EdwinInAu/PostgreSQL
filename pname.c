@@ -16,6 +16,7 @@
 #include <string.h>
 #include <memory.h>
 #include "access/hash.h"
+#include "utils/builtins.h" 
 
 PG_MODULE_MAGIC;
 
@@ -44,6 +45,9 @@ int check_input(char *string){
 		if(string[i] == ','){
 			comma_number++;
 			index = i;
+		}
+		if(string[i] != ' ' && string[i] != ',' && string[i] != '-' && !isalpha(string[i])){
+			return 0;
 		}
 		if(isdigit(string[i])){
 			return 0;
@@ -283,7 +287,7 @@ person_name_less_than(PG_FUNCTION_ARGS)
 	PG_RETURN_BOOL(person_name_compare(x, y) < 0);
 }
 
-PG_FUNCTION_INFO_V1(peson_name_less_than_or_equal);
+PG_FUNCTION_INFO_V1(person_name_less_than_or_equal);
 
 Datum
 // less than or equal: person name x <= person name y
@@ -331,6 +335,18 @@ person_name_greater_than(PG_FUNCTION_ARGS)
 	PG_RETURN_BOOL(person_name_compare(x, y) > 0);
 }
 
+PG_FUNCTION_INFO_V1(person_name_unequal);
+
+Datum
+// less than or equal: person name x <= person name y
+person_name_unequal(PG_FUNCTION_ARGS)
+{
+	PersonName    *x = (PersonName *) PG_GETARG_POINTER(0);
+	PersonName    *y = (PersonName *) PG_GETARG_POINTER(1);
+
+	PG_RETURN_BOOL(person_name_compare(x, y) != 0);
+}
+
 /*****************************************************************************
  * Support Functions
  *
@@ -369,7 +385,7 @@ family(PG_FUNCTION_ARGS)
 	strncpy(family_name, x->person_name, index);
 	family_name[index] = '\0';
 
-	PG_RETURN_CSTRING(family_name);
+	PG_RETURN_CSTRING(cstring_to_text(family_name));
 }
 
 PG_FUNCTION_INFO_V1(given);
@@ -402,7 +418,7 @@ given(PG_FUNCTION_ARGS)
 		given_name++;
 	}
 
-	PG_RETURN_CSTRING(given_name);
+	PG_RETURN_CSTRING(cstring_to_text(given_name));
 }
 
 PG_FUNCTION_INFO_V1(show);
@@ -489,7 +505,7 @@ show(PG_FUNCTION_ARGS)
     strcpy(full_name, tmp);
     strcat(full_name, " ");
 	strcat(full_name, family_name);
-	PG_RETURN_CSTRING(full_name);
+	PG_RETURN_CSTRING(cstring_to_text(full_name));
 }
 
 PG_FUNCTION_INFO_V1(person_name_hash);
@@ -551,8 +567,8 @@ person_name_hash(PG_FUNCTION_ARGS){
     strcpy(full_name, family_name);
 	strcat(full_name, given_name);
 
-	len_full_time = strlen(full_name) + 1;
+	len_full_time = strlen(full_name);
 
-	hash_number = DatumGetUInt32(hash_any((unsigned char *) full_name, len_full_time));
+	int hash_number = DatumGetUInt32(hash_any((const unsigned char *) full_name, len_full_time));
 	PG_RETURN_INT32(hash_number); 
 }
