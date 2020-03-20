@@ -147,6 +147,9 @@ AS '_OBJWD_/pname' LANGUAGE C IMMUTABLE STRICT;
 CREATE FUNCTION person_name_hash(PersonName) RETURNS int4
 AS '_OBJWD_/pname' LANGUAGE C IMMUTABLE STRICT;
 
+CREATE FUNCTION person_name_compare(PersonName,PersonName) RETURNS int4
+AS '_OBJWD_/pname' LANGUAGE C IMMUTABLE STRICT;
+
 -- now we can make the operator class
 CREATE OPERATOR CLASS person_name_ops1
     DEFAULT FOR TYPE PersonName USING hash AS
