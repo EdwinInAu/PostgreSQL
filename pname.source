@@ -49,18 +49,18 @@ CREATE FUNCTION pname_out(PersonName)
 -- the binary input function 'pname_recv' takes a StringInfo buffer
 -- and turns its contents into the internal representation.
 
--- CREATE FUNCTION pname_recv(internal)
---   RETURNS PersonName
---   AS '_OBJWD_/pname'
---   LANGUAGE C IMMUTABLE STRICT;
+CREATE FUNCTION pname_recv(internal)
+    RETURNS PersonName
+    AS '_OBJWD_/pname'
+    LANGUAGE C IMMUTABLE STRICT;
 
 -- the binary output function 'pname_send' takes the internal representation
 -- and converts it into a (hopefully) platform-independent bytea string.
 
--- CREATE FUNCTION pname_send(PersonName)
---   RETURNS bytea
---   AS '_OBJWD_/pname'
---   LANGUAGE C IMMUTABLE STRICT;
+CREATE FUNCTION pname_send(PersonName)
+    RETURNS bytea
+    AS '_OBJWD_/pname'
+    LANGUAGE C IMMUTABLE STRICT;
 
 -- now, we can create the type. The internallength is variable-sized. 
 
@@ -68,8 +68,8 @@ CREATE TYPE PersonName (
    internallength = variable,
    input = pname_in,
    output = pname_out,
-   --receive = pname_recv,
-   --send = pname_send,
+   receive = pname_recv,
+   send = pname_send,
 );
 
 ----------------------------- 
@@ -125,8 +125,6 @@ CREATE OPERATOR > (
 );
 
 -- create the support function too
--- CREATE FUNCTION person_name_compare(PersonName, PersonName) RETURNS int4
---   AS '_OBJWD_/pname' LANGUAGE C IMMUTABLE STRICT;
 
 CREATE FUNCTION family(PersonName) RETURNS cstring
    AS '_OBJWD_/pname' LANGUAGE C IMMUTABLE STRICT;
