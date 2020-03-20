@@ -45,9 +45,6 @@ int check_input(char *string){
 			comma_number++;
 			index = i;
 		}
-		if(string[i] != ' ' && string[i] != ',' && string[i] != '-' && !isalpha(string[i])){
-			return 0;
-		}
 		if(isdigit(string[i])){
 			return 0;
 		}
@@ -286,7 +283,7 @@ person_name_less_than(PG_FUNCTION_ARGS)
 	PG_RETURN_BOOL(person_name_compare(x, y) < 0);
 }
 
-PG_FUNCTION_INFO_V1(person_name_less_than_or_equal);
+PG_FUNCTION_INFO_V1(peson_name_less_than_or_equal);
 
 Datum
 // less than or equal: person name x <= person name y
