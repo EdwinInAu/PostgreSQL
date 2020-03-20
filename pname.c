@@ -569,6 +569,6 @@ person_name_hash(PG_FUNCTION_ARGS){
 
 	len_full_time = strlen(full_name);
 
-	int hash_number = DatumGetUInt32(hash_any((const unsigned char *) full_name, len_full_time));
+	hash_number = DatumGetUInt32(hash_any((const unsigned char *) full_name, len_full_time));
 	PG_RETURN_INT32(hash_number); 
 }
