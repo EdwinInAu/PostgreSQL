@@ -154,7 +154,7 @@ pname_recv(PG_FUNCTION_ARGS)
 	StringInfo	buf = (StringInfo) PG_GETARG_POINTER(0);
 	PersonName    *result;
 
-	char *personName = pq_getmsgstring(buf);
+	const char *personName = pq_getmsgstring(buf);
 	int len = strlen(personName);
 
 	result = (PersonName *) palloc(VARHDRSZ + len + 1);
@@ -202,6 +202,10 @@ int person_name_compare(PersonName *x, PersonName *y){
 
 	int index_x = 0;
 	int index_y = 0;
+    char *family_name_x;
+    char *family_name_y;
+    char *given_name_x;
+    char *given_name_y;
 
 	// get the index of comma of the person name x
 	for(int i = 0; i < len_x; i++){
@@ -218,12 +222,12 @@ int person_name_compare(PersonName *x, PersonName *y){
 		}
 	}
 
-	char *family_name_x = (char*) malloc(sizeof(char)*(index_x+2));
+	family_name_x = (char*) malloc(sizeof(char)*(index_x+2));
     if (family_name_x == NULL){ 
 		exit (1);
 	}
 
-	char *family_name_y = (char*) malloc(sizeof(char)*(index_y+2));
+	family_name_y = (char*) malloc(sizeof(char)*(index_y+2));
     if (family_name_y == NULL){ 
 		exit (1);
 	}
@@ -243,8 +247,8 @@ int person_name_compare(PersonName *x, PersonName *y){
 	}
 
 	// get the given name of x and y
-    char *given_name_x = strchr(x->person_name, ',');
-    char *given_name_y = strchr(y->person_name, ',');
+    given_name_x = strchr(x->person_name, ',');
+    given_name_y = strchr(y->person_name, ',');
 
 	given_name_x++;
 	given_name_y++;
@@ -346,6 +350,7 @@ family(PG_FUNCTION_ARGS)
 
 	int len = strlen(x->person_name);
 	int index = 0;
+    char *family_name;
 
 	// get the index of comma of the person name x
 	for(int i = 0; i < len; i++){
@@ -355,7 +360,7 @@ family(PG_FUNCTION_ARGS)
 		}
 	}
 
-    char *family_name = (char*) malloc(sizeof(char)*(index+2));
+    family_name = (char*) malloc(sizeof(char)*(index+2));
     if (family_name == NULL){ 
 		exit (1);
 	}
@@ -378,6 +383,7 @@ given(PG_FUNCTION_ARGS)
 	int len = strlen(x->person_name);
 
 	int index = 0;
+    char *given_name;
 
 	// get the index of comma of the person name x
 	for(int i = 0; i < len; i++){
@@ -387,7 +393,7 @@ given(PG_FUNCTION_ARGS)
 		}
 	}
     // get the given name of x
-  	char *given_name = strchr(x->person_name, ',');
+    given_name = strchr(x->person_name, ',');
 
 	given_name++;
 
@@ -412,6 +418,14 @@ show(PG_FUNCTION_ARGS)
 
 	int index = 0;
 
+    int space_index = 0;
+    int len_given_name;
+
+    char *family_name;
+    char *given_name;
+    char *tmp;
+    char *full_name;
+
 	// get the index of comma of the person name x
 	for(int i = 0; i < len_x; i++){
 		if(x->person_name[i] == ','){
@@ -420,7 +434,7 @@ show(PG_FUNCTION_ARGS)
 		}
 	}
 
-    char *family_name = (char*) malloc(sizeof(char) * (index+2));
+    family_name = (char*) malloc(sizeof(char) * (index+2));
 
     if (family_name == NULL){ 
 		exit (1);
@@ -432,7 +446,7 @@ show(PG_FUNCTION_ARGS)
 	family_name[index] = '\0';
 
 	// get the given name of x
-    char *given_name = strchr(x->person_name, ',');
+    given_name = strchr(x->person_name, ',');
 
 	given_name++;
 
@@ -441,17 +455,15 @@ show(PG_FUNCTION_ARGS)
 		given_name++;
 	}
 
-    int len_given_name = strlen(given_name);
+    len_given_name = strlen(given_name);
 
     // use char* tmp to get the single given name  
     // e.g. given_name = Edwin Wang
     // only get the name before space: Edwin
-    char *tmp = (char*) malloc(sizeof(char)*(len_given_name+2));
+    tmp = (char*) malloc(sizeof(char)*(len_given_name+2));
     if (tmp == NULL){ 
 		exit (1);
 	}
-
-    int space_index = 0;
 
 	for(int j = 0; j < strlen(given_name); j++){
 		if(given_name[j] == ' '){
@@ -467,7 +479,7 @@ show(PG_FUNCTION_ARGS)
     }
 
 	//+2  1 for the zero-terminator, 1 for the space in the middle
-    char *full_name = (char*) malloc(sizeof(char *)*(strlen(family_name)+strlen(given_name)+2));
+    full_name = (char*) malloc(sizeof(char *)*(strlen(family_name)+strlen(given_name)+2));
     if (full_name == NULL){ 
 		exit (1);
 	}
@@ -509,7 +521,6 @@ person_name_hash(PG_FUNCTION_ARGS){
 		}
 	}
 
-    
     family_name = (char*) malloc(sizeof(char) * (index+2));
     if (family_name == NULL){ 
 		exit (1);
