@@ -578,14 +578,10 @@ person_name_hash(PG_FUNCTION_ARGS){
 
 	int index = 0;
 
-    int space_index = 0;
-    int len_given_name;
-
     char *family_name;
     char *given_name;
-    char *tmp;
     char *full_name;
-	char *result;
+	int hash_number;
 
 	// get the index of comma of the person name x
 	for(int i = 0; i < len_x; i++){
@@ -616,29 +612,6 @@ person_name_hash(PG_FUNCTION_ARGS){
 		given_name++;
 	}
 
-    len_given_name = strlen(given_name);
-
-    // use char* tmp to get the single given name  
-    // e.g. given_name = Edwin Wang
-    // only get the name before space: Edwin
-    tmp = (char*) palloc(sizeof(char)*(len_given_name+2));
-    if (tmp == NULL){ 
-		exit (1);
-	}
-
-	for(int j = 0; j < strlen(given_name); j++){
-		if(given_name[j] == ' '){
-            space_index = j;
-			break; 
-		}
-	}
-    if(space_index > 0){
-        strncpy(tmp, given_name, space_index);
-        tmp[space_index] = '\0';
-    }else{
-        strcpy(tmp,given_name);
-    }
-
 	//+2  1 for the zero-terminator, 1 for the space in the middle
     full_name = (char*) palloc(sizeof(char *)*(strlen(family_name)+strlen(given_name)+2));
     if (full_name == NULL){ 
@@ -647,17 +620,16 @@ person_name_hash(PG_FUNCTION_ARGS){
 
 	// combine given_name, space and family_name
 	// e.g. Given Family
-    strcpy(full_name, tmp);
-    strcat(full_name, " ");
-	strcat(full_name, family_name);
+    strcpy(full_name, family_name);
+    strcat(full_name, ",");
+	strcat(full_name, given_name);
 
 
 	// int hash_number;
 	// char *result;
 	// int len = strlen(x->person_name) + 1;
 	// result = x->person_name;
-	result = DatumGetUInt32(hash_any((const unsigned char *) full_name, strlen(full_name)));
-	pfree(full_name);
+	hash_number = DatumGetUInt32(hash_any((const unsigned char *) full_name, strlen(full_name) + 2 ));
 	// PG_RETURN_INT32(hash_number); 
-	PG_RETURN_DATUM(result);
+	PG_RETURN_DATUM(hash_number);
 }
