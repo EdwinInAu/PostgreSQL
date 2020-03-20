@@ -495,6 +495,10 @@ person_name_hash(PG_FUNCTION_ARGS){
 
     int len_full_time;
 
+    char *family_name;
+    char *given_name;
+    char *full_name;
+
     ///delete space after comma
 
     // get the index of comma of the person name x
@@ -505,16 +509,12 @@ person_name_hash(PG_FUNCTION_ARGS){
 		}
 	}
 
-    char *family_name;
+    
     family_name = (char*) malloc(sizeof(char) * (index+2));
     if (family_name == NULL){ 
 		exit (1);
 	}
 
-    char *given_name;
-
-    char *full_name;
-    
 	// get the family name of x
 	strncpy(family_name, x->person_name, index+1);
 
