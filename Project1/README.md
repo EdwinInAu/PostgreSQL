@@ -2,7 +2,7 @@
 
 
 
-> ### :computer: [Project 1 Description and Request](./Project1_Specification.pdf)
+> ### :computer: [Project Description and Request](./Project1_Specification.pdf)
 > ### :cloud: [Make file](./Makefile)
 > ### :art: [Source File](./pname.source)
 > ### :floppy_disk: [Code File](./pname.c)
