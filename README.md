@@ -1,5 +1,5 @@
 # Data Base Implementation
-## :cloud: [Homework 1](./Homework1)
+## :cloud: [Project 1](./Project1)
 ## :art: [Homework 2](./Homework2)
 ## :computer: [Project](./Project)
 
