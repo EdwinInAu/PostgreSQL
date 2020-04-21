@@ -138,8 +138,34 @@ PageID addToRelation(Reln r, Tuple t)
 	// compute tuple signature and add to tsigf
 	
 	//TODO
+    Bits tupleSignature = makeTupleSig(r, t);
+    Count numberOfTupleSignaturePages = nTsigPages(r);
+    Count lastPageIndex = nTsigPages(r) - 1;
+    File tupleSignatureFile = tsigFile(r);
+    Page lastPage = getPage(tupleSignatureFile, lastPageIndex);
+    Count maxTupleSignaturesPP = maxTsigsPP(relation);
+    Count pageNumberOfItems = pageNitems(lastPage);
+    Count numberOfTupleSignatures =  nTsigs(r);
+    if(pageNumberOfItems == maxTupleSignaturesPP){
+        addPage(tupleSignatureFile);
+        newLastPage = newPage();
+        if (newP == NULL) {
+            return NO_PAGE;
+        }
+        lastPageIndex++;
+        numberOfTupleSignaturePages++;
+        putBits(newLastPage, pageNumberOfItems,tupleSignature);
+        addOneItem(newLastPage);
+        putPage(tupleSignatureFile,lastPageIndex, newLastPage);
+    }
+    else{
+        putBits(lastPage, pageNumberOfItems,tupleSignature);
+        addOneItem(lastPage);
+        putPage(tupleSignatureFile, lastPageIndex, lastPage);
+    }
+    numberOfTupleSignatures++;
 
-	// compute page signature and add to psigf
+    // compute page signature and add to psigf
 
 	//TODO
 

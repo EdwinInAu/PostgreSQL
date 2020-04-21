@@ -35,78 +35,127 @@ Bits newBits(int nbits)
 void freeBits(Bits b)
 {
 	//TODO
+    free(b);
 }
 
 // check if the bit at position is 1
 
-Bool bitIsSet(Bits b, int position)
-{
-	assert(b != NULL);
-	assert(0 <= position && position < b->nbits);
-	//TODO
-	return FALSE; // remove this
+Bool bitIsSet(Bits b, int position) {
+    int count;
+    assert(b != NULL);
+    assert(0 <= position && position < b->nbits);
+    //TODO
+    // borrow from function show bits
+    count = 0;
+    for (int i = 0; i <= b->nbytes - 1; i++) {
+        for (int j = 0; j <= 7; j++) {
+            Byte mask = (1 << j);
+            if (b->bitstring[i] & mask) {
+                if (count == position) {
+                    return TRUE;
+                }
+            }
+            count++;
+        }
+    }
+    return FALSE; // remove this
 }
 
 // check whether one Bits b1 is a subset of Bits b2
 
-Bool isSubset(Bits b1, Bits b2)
-{
-	assert(b1 != NULL && b2 != NULL);
-	assert(b1->nbytes == b2->nbytes);
-	//TODO
-	return FALSE; // remove this
+Bool isSubset(Bits b1, Bits b2) {
+    assert(b1 != NULL && b2 != NULL);
+    assert(b1->nbytes == b2->nbytes);
+    //TODO
+    for (int i = 0; i <= b1->nbytes - 1; i++) {
+        if (b1->bitstring[i] != (b1->bitstring[i] & b2->bitstring[i])) {
+            return FALSE;
+        }
+    }
+    return TRUE;
 }
 
 // set the bit at position to 1
 
-void setBit(Bits b, int position)
-{
-	assert(b != NULL);
-	assert(0 <= position && position < b->nbits);
-	//TODO
+void setBit(Bits b, int position) {
+    int count;
+    assert(b != NULL);
+    assert(0 <= position && position < b->nbits);
+    //TODO
+    count = 0;
+    for (int i = 0; i <= b->nbytes - 1; i++) {
+        for (int j = 0; j <= 7; j++) {
+            if (count == position) {
+                b->bitstring[i] = b->bitstring[i] | (1 << j);
+            }
+            count++;
+        }
+    }
 }
 
 // set all bits to 1
 
-void setAllBits(Bits b)
-{
-	assert(b != NULL);
-	//TODO
+void setAllBits(Bits b) {
+    assert(b != NULL);
+    //TODO
+    for (int i = 0; i <= b->nbytes - 1; i++) {
+        for (int j = 0; j <= 7; j++) {
+            b->bitstring[i] = b->bitstring[i] | (1 << j);
+        }
+    }
 }
 
 // set the bit at position to 0
 
-void unsetBit(Bits b, int position)
-{
-	assert(b != NULL);
-	assert(0 <= position && position < b->nbits);
-	//TODO
+void unsetBit(Bits b, int position) {
+    int count;
+    assert(b != NULL);
+    assert(0 <= position && position < b->nbits);
+    //TODO
+    count = 0;
+    for (int i = 0; i <= b->nbytes - 1; i++) {
+        for (int j = 0; j <= 7; j++) {
+            if (count == position) {
+                b->bitstring[i] = b->bitstring[i] & ~(1 << j);
+            }
+            count++;
+        }
+    }
 }
 
 // set all bits to 0
 
-void unsetAllBits(Bits b)
-{
-	assert(b != NULL);
-	//TODO
+void unsetAllBits(Bits b) {
+    assert(b != NULL);
+    //TODO
+    for (int i = 0; i <= b->nbytes - 1; i++) {
+        for (int j = 0; j <= 7; j++) {
+            b->bitstring[i] = b->bitstring[i] & ~(1 << j);
+        }
+    }
 }
 
 // bitwise AND ... b1 = b1 & b2
 
-void andBits(Bits b1, Bits b2)
-{
-	assert(b1 != NULL && b2 != NULL);
-	assert(b1->nbytes == b2->nbytes);
-	//TODO
+void andBits(Bits b1, Bits b2) {
+    assert(b1 != NULL && b2 != NULL);
+    assert(b1->nbytes == b2->nbytes);
+    //TODO
+    for (int i = 0; i <= b1->nbytes - 1; i++) {
+        b1->bitstring[i] = (b1->bitstring[i] & b2->bitstring[i]);
+    }
+
 }
 
 // bitwise OR ... b1 = b1 | b2
 
-void orBits(Bits b1, Bits b2)
-{
-	assert(b1 != NULL && b2 != NULL);
-	assert(b1->nbytes == b2->nbytes);
-	//TODO
+void orBits(Bits b1, Bits b2) {
+    assert(b1 != NULL && b2 != NULL);
+    assert(b1->nbytes == b2->nbytes);
+    //TODO
+    for (int i = 0; i <= b1->nbytes - 1; i++) {
+        b1->bitstring[i] = (b1->bitstring[i] | b2->bitstring[i]);
+    }
 }
 
 
@@ -114,17 +163,19 @@ void orBits(Bits b1, Bits b2)
 // from specified position in Page buffer
 // and place it in a BitsRep structure
 
-void getBits(Page p, Offset pos, Bits b)
-{
-	//TODO
+void getBits(Page p, Offset pos, Bits b) {
+    //TODO
+    Byte *address = addrInPage(p, pos, b->nbytes);
+    memcpy(b->bitstring, address, b->nbytes);
 }
 
 // copy the bit-string array in a BitsRep
 // structure to specified position in Page buffer
 
-void putBits(Page p, Offset pos, Bits b)
-{
-	//TODO
+void putBits(Page p, Offset pos, Bits b) {
+    //TODO
+    Byte *address = addrInPage(p, pos, b->nbytes);
+    memcpy(address, b->bitstring, b->nbytes);
 }
 
 // show Bits on stdout
