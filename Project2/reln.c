@@ -154,8 +154,9 @@ PageID addToRelation(Reln r, Tuple t)
             return NO_PAGE;
         }
         lastPageIndex++;
-        numberOfTupleSignaturePages++;
-        putBits(newLastPage, pageNumberOfItems,tupleSignature);
+        rp->tsigNpages++;
+
+        putBits(newLastPage, pageNitems(newLastPage),tupleSignature);
         addOneItem(newLastPage);
         putPage(tupleSignatureFile,lastPageIndex, newLastPage);
     }
@@ -164,7 +165,7 @@ PageID addToRelation(Reln r, Tuple t)
         addOneItem(lastPage);
         putPage(tupleSignatureFile, lastPageIndex, lastPage);
     }
-    numberOfTupleSignatures++;
+    rp->ntsigs++;
 
     // compute page signature and add to psigf
 
@@ -183,7 +184,7 @@ PageID addToRelation(Reln r, Tuple t)
     if(numberOfDataPages != numberOfPageSignatures){
         if (lastPageItems == maxPageSignaturesPP){
             addPage(pageSignatureFile);
-            numberOfPageSignaturePages++;
+            rp->psigNpages++;
             lastPageIndex++;
             lastPage = newPage();
             if (lastPage == NULL) return NO_PAGE;
@@ -197,7 +198,7 @@ PageID addToRelation(Reln r, Tuple t)
         Bits tmp = getBits(m);
         getBits(lastPage,position, tmp);
         orBits(tmp, pageSignature);
-        putBits(lastPage, pageNitems(lastPage), tmp);
+        putBits(lastPage, position, tmp);
         putPage(pageSignatureFile, lastPageIndex, lastPage);
         freeBits(tmp);
     }

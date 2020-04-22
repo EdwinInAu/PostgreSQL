@@ -24,14 +24,14 @@ Bits makeTupleSig(Reln r, Tuple t)
     Bits tupleSignature = newBits(m);
     i = 0;
     for(i; i < numberOfAttributes; i++){
-        Bits codeWord = codeword(tupleValues[i], m, k);
+        Bits codeWord = tupleSigCodeword(tupleValues[i], m, k);
         orBits(tupleSignature, codeWord);
     }
 	return tupleSignature;
 }
 
 // borrow from 7th lecture notes
-bits codeword(char *attr_value, Count m, Count k)
+bits tupleSigCodeword(char *attr_value, Count m, Count k)
 {
     int  nbits = 0;
     Bits cword = newBits(m);
@@ -55,7 +55,7 @@ void findPagesUsingTupSigs(Query q)
 	int pageId;
 	int index;
 	Reln relation = q->rel;
-	Bits querySignature = makeTupleSig(relation, q->qstring);
+	Bits queryTupleSignature = makeTupleSig(relation, q->qstring);
     Bits pages = q->pages;
     unsetAllBits(pages);
     File tupleSignatureFile = tsigFile(relation);
@@ -72,10 +72,11 @@ void findPagesUsingTupSigs(Query q)
         for (index; index < numberOfPageItems; index++){
             Bits tmp = newBits(m);
             getBits(currentPage, index, tmp);
-            if(isSubset(querySignature, tmp) == TRUE){
+            if(isSubset(queryTupleSignature, tmp) == TRUE){
                 // 这里有可能存在问题
                 setBit(pages, pageId);
             }
+            freeBits(tmp);
             q->nsigs++;
         }
         q->nsigpages++;

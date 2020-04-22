@@ -70,9 +70,9 @@ void scanAndDisplayMatchingTuples(Query q) {
     strcpy(queryString, q->qstring);
     assert(queryString != NULL);
     pageIndex = 0;
-    Count q->ntuples = 0;
-    Count q->ntuppages = 0;
-    Count q->nfalse = 0;
+    q->ntuples = 0;
+    q->ntuppages = 0;
+    q->nfalse = 0;
 
     for (pageIndex; pageIndex < npages; pageIndex++) {
         if (bitIsSet(pages, pageIndex) == FALSE) {
