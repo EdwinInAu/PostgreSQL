@@ -10,6 +10,7 @@
 #include "page.h"
 #include "tuple.h"
 #include "tsig.h"
+#include "psig.h"
 #include "bits.h"
 #include "hash.h"
 // open a file with a specified suffix
@@ -149,7 +150,7 @@ PageID addToRelation(Reln r, Tuple t)
     if(pageNumberOfItems == maxTupleSignaturesPP){
         addPage(tupleSignatureFile);
         newLastPage = newPage();
-        if (newP == NULL) {
+        if (newLastPage == NULL) {
             return NO_PAGE;
         }
         lastPageIndex++;
@@ -168,6 +169,38 @@ PageID addToRelation(Reln r, Tuple t)
     // compute page signature and add to psigf
 
 	//TODO
+    Bits pageSignature =  makePageSig(r, t);
+    Count numberOfDataPages = nPages(r);
+    Count numberOfPageSignatures = nPsigs(r);
+    Count maxPageSignaturesPP = maxPsigsPP(r);
+    File pageSignatureFile = psigFile(r);
+    Count numberOfPageSignaturePages = nPsigPages(r);
+    Count lastPageIndex = numberOfPageSignaturePages - 1;
+    Page lastPage = getPage(pageSignatureFile, lastPageIndex);
+    Count lastPageItems = pageNitems(lastPage);
+    Count m = psigBits(r);
+
+    if(numberOfDataPages != numberOfPageSignatures){
+        if (lastPageItems == maxPageSignaturesPP){
+            addPage(pageSignatureFile);
+            numberOfPageSignaturePages++;
+            lastPageIndex++;
+            lastPage = newPage();
+            if (lastPage == NULL) return NO_PAGE;
+        }
+        putBits(lastPage, pageNitems(lastPage), pageSignature);
+        addOneItem(lastPage);
+        putPage(pageSignatureFile, lastPageIndex, lastPage);
+        rp->npsigs++;
+    }else{
+        Offset position = lastPageItems - 1;
+        Bits tmp = getBits(m);
+        getBits(lastPage,position, tmp);
+        orBits(tmp, pageSignature);
+        putBits(lastPage, pageNitems(lastPage), tmp);
+        putPage(pageSignatureFile, lastPageIndex, lastPage);
+        freeBits(tmp);
+    }
 
 	// use page signature to update bit-slices
 
