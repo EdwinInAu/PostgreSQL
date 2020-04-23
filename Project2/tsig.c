@@ -22,8 +22,7 @@ Bits makeTupleSig(Reln r, Tuple t)
 	Count k = codeBits(r);
 	char **tupleValues = tupleVals(r, t);
     Bits tupleSignature = newBits(m);
-    i = 0;
-    for(i; i < numberOfAttributes; i++){
+    for(i = 0; i < numberOfAttributes; i++){
         Bits codeWord = tupleSigCodeword(tupleValues[i], m, k);
         orBits(tupleSignature, codeWord);
     }
@@ -31,18 +30,16 @@ Bits makeTupleSig(Reln r, Tuple t)
 }
 
 // borrow from 7th lecture notes
-bits tupleSigCodeword(char *attr_value, Count m, Count k)
+Bits tupleSigCodeword(char *attr_value, Count m, Count k)
 {
-    int  nbits = 0;
+    int nbits = 0;
     Bits cword = newBits(m);
     srandom(hash_any(attr_value, strlen(attr_value)));
     if (strcmp(attr_value, "?") != 0) {
         while (nbits < k) {
             int i = random() % m;
-            if (((1 << i) & cword) == 0) {
-                cword |= (1 << i);
-                nbits++;
-            }
+            setBit(cword, i);
+            nbits++;
         }
     }
     return cword;
@@ -63,13 +60,11 @@ void findPagesUsingTupSigs(Query q)
     Count tupleSignaturePages = nTsigPages(relation);
     // max tuple signatures per page
     // Count maxTupleSignaturesPP = maxTsigsPP(relation);
-    Count m = tsigBits(r);
-    pageID = 0;
-    index = 0;
-    for (pageId; pageId < tupleSignaturePages; pageId++) {
+    Count m = tsigBits(relation);
+    for (pageId = 0; pageId < tupleSignaturePages; pageId++) {
         Page currentPage = getPage(tupleSignatureFile, pageId);
         Count numberOfPageItems = pageNitems(currentPage);
-        for (index; index < numberOfPageItems; index++){
+        for (index = 0; index < numberOfPageItems; index++){
             Bits tmp = newBits(m);
             getBits(currentPage, index, tmp);
             if(isSubset(queryTupleSignature, tmp) == TRUE){

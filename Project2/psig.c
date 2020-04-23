@@ -6,6 +6,8 @@
 #include "reln.h"
 #include "query.h"
 #include "psig.h"
+#include "bits.h"
+#include "hash.h"
 
 Bits makePageSig(Reln r, Tuple t)
 {
@@ -17,8 +19,7 @@ Bits makePageSig(Reln r, Tuple t)
     Count k = codeBits(r);
     char **tupleValues = tupleVals(r, t);
     Bits pageSignature = newBits(m);
-    i = 0;
-    for(i; i < numberOfAttributes; i++){
+    for(i = 0; i < numberOfAttributes; i++){
         Bits codeWord = pageSigCodeword(tupleValues[i], m, k);
         orBits(pageSignature, codeWord);
     }
@@ -26,7 +27,7 @@ Bits makePageSig(Reln r, Tuple t)
 }
 
 // borrow from 7th lecture notes
-bits pageSigCodeword(char *attr_value, Count m, Count k)
+Bits pageSigCodeword(char *attr_value, Count m, Count k)
 {
     int  nbits = 0;
     Bits cword = newBits(m);
@@ -34,10 +35,8 @@ bits pageSigCodeword(char *attr_value, Count m, Count k)
     if (strcmp(attr_value, "?") != 0) {
         while (nbits < k) {
             int i = random() % m;
-            if (((1 << i) & cword) == 0) {
-                cword |= (1 << i);
-                nbits++;
-            }
+            setBit(cword, i);
+            nbits++;
         }
     }
     return cword;
@@ -55,13 +54,11 @@ void findPagesUsingPageSigs(Query q)
     unsetAllBits(pages);
     File pageSignatureFile = psigFile(relation);
     Count pageSignaturePages = nPsigPages(relation);
-    Count m = psigBits(r);
-    pageID = 0;
-    index = 0;
-    for (pageId; pageId < pageSignaturePages; pageId++) {
+    Count m = psigBits(relation);
+    for (pageId = 0; pageId < pageSignaturePages; pageId++) {
         Page currentPage = getPage(pageSignatureFile, pageId);
         Count numberOfPageItems = pageNitems(currentPage);
-        for (index; index < numberOfPageItems; index++){
+        for (index = 0; index < numberOfPageItems; index++){
             Bits tmp = newBits(m);
             getBits(currentPage, index, tmp);
             if(isSubset(queryPageSignature, tmp) == TRUE){

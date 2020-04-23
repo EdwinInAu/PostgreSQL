@@ -140,30 +140,30 @@ PageID addToRelation(Reln r, Tuple t)
 	
 	//TODO
     Bits tupleSignature = makeTupleSig(r, t);
-    Count numberOfTupleSignaturePages = nTsigPages(r);
-    Count lastPageIndex = nTsigPages(r) - 1;
+//    Count numberOfTupleSignaturePages = nTsigPages(r);
+    Count lastPageIndexTs = nTsigPages(r) - 1;
     File tupleSignatureFile = tsigFile(r);
-    Page lastPage = getPage(tupleSignatureFile, lastPageIndex);
-    Count maxTupleSignaturesPP = maxTsigsPP(relation);
-    Count pageNumberOfItems = pageNitems(lastPage);
-    Count numberOfTupleSignatures =  nTsigs(r);
+    Page lastPageTs = getPage(tupleSignatureFile, lastPageIndexTs);
+    Count maxTupleSignaturesPP = maxTsigsPP(r);
+    Count pageNumberOfItems = pageNitems(lastPageTs);
+//    Count numberOfTupleSignatures =  nTsigs(r);
     if(pageNumberOfItems == maxTupleSignaturesPP){
         addPage(tupleSignatureFile);
-        newLastPage = newPage();
+        Page newLastPage = newPage();
         if (newLastPage == NULL) {
             return NO_PAGE;
         }
-        lastPageIndex++;
+        lastPageIndexTs++;
         rp->tsigNpages++;
 
         putBits(newLastPage, pageNitems(newLastPage),tupleSignature);
         addOneItem(newLastPage);
-        putPage(tupleSignatureFile,lastPageIndex, newLastPage);
+        putPage(tupleSignatureFile,lastPageIndexTs, newLastPage);
     }
     else{
-        putBits(lastPage, pageNumberOfItems,tupleSignature);
-        addOneItem(lastPage);
-        putPage(tupleSignatureFile, lastPageIndex, lastPage);
+        putBits(lastPageTs, pageNumberOfItems,tupleSignature);
+        addOneItem(lastPageTs);
+        putPage(tupleSignatureFile, lastPageIndexTs, lastPageTs);
     }
     rp->ntsigs++;
 
@@ -176,30 +176,30 @@ PageID addToRelation(Reln r, Tuple t)
     Count maxPageSignaturesPP = maxPsigsPP(r);
     File pageSignatureFile = psigFile(r);
     Count numberOfPageSignaturePages = nPsigPages(r);
-    Count lastPageIndex = numberOfPageSignaturePages - 1;
-    Page lastPage = getPage(pageSignatureFile, lastPageIndex);
-    Count lastPageItems = pageNitems(lastPage);
+    Count lastPageIndexPs = numberOfPageSignaturePages - 1;
+    Page lastPagePs = getPage(pageSignatureFile, lastPageIndexPs);
+    Count lastPageItems = pageNitems(lastPagePs);
     Count m = psigBits(r);
 
     if(numberOfDataPages != numberOfPageSignatures){
         if (lastPageItems == maxPageSignaturesPP){
             addPage(pageSignatureFile);
             rp->psigNpages++;
-            lastPageIndex++;
-            lastPage = newPage();
-            if (lastPage == NULL) return NO_PAGE;
+            lastPageIndexPs++;
+            lastPagePs = newPage();
+            if (lastPagePs == NULL) return NO_PAGE;
         }
-        putBits(lastPage, pageNitems(lastPage), pageSignature);
-        addOneItem(lastPage);
-        putPage(pageSignatureFile, lastPageIndex, lastPage);
+        putBits(lastPagePs, pageNitems(lastPagePs), pageSignature);
+        addOneItem(lastPagePs);
+        putPage(pageSignatureFile, lastPageIndexPs, lastPagePs);
         rp->npsigs++;
     }else{
         Offset position = lastPageItems - 1;
-        Bits tmp = getBits(m);
-        getBits(lastPage,position, tmp);
+        Bits tmp = newBits(m);
+        getBits(lastPagePs,position, tmp);
         orBits(tmp, pageSignature);
-        putBits(lastPage, position, tmp);
-        putPage(pageSignatureFile, lastPageIndex, lastPage);
+        putBits(lastPagePs, position, tmp);
+        putPage(pageSignatureFile, lastPageIndexPs, lastPagePs);
         freeBits(tmp);
     }
 

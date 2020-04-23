@@ -74,15 +74,15 @@ void scanAndDisplayMatchingTuples(Query q) {
     q->ntuppages = 0;
     q->nfalse = 0;
 
-    for (pageIndex; pageIndex < npages; pageIndex++) {
+    for (pageIndex = 0; pageIndex < npages; pageIndex++) {
         if (bitIsSet(pages, pageIndex) == FALSE) {
             continue;
         }
-        Page currentPage = getPage(file, pageIndex)
+        Page currentPage = getPage(file, pageIndex);
         tupleIndex = 0;
         Count pageItems = pageNitems(currentPage);
         count = 0;
-        for (tupleIndex; tupleIndex < pageItems; tupleIndex++) {
+        for (tupleIndex = 0; tupleIndex < pageItems; tupleIndex++) {
             Tuple currentTuple = getTupleFromPage(relation, currentPage, tupleIndex);
             if (tupleMatch(relation, currentTuple, queryString) == TRUE) {
                 showTuple(relation, currentTuple);
