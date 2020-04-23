@@ -12,5 +12,5 @@
 
 Bits makePageSig(Reln, Tuple);
 void findPagesUsingPageSigs(Query);
-
+Bits pageSigCodeword(char *attr_value, Count m, Count k);
 #endif

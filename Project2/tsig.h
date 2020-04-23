@@ -12,5 +12,5 @@
 
 Bits makeTupleSig(Reln, Tuple);
 void findPagesUsingTupSigs(Query);
-
+Bits tupleSigCodeword(char *attr_value, Count m, Count k);
 #endif
