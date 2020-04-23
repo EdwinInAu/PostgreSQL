@@ -21,7 +21,7 @@ void findPagesUsingBitSlices(Query q)
 	Bits pages = newBits(bm);
     setAllBits(pages);
     int pageInit = -10;
-    for(int index = 0; index < pm; idex++){
+    for(int index = 0; index < pm; index++){
         if(bitIsSet(queryPageSignature, index) == TRUE) {
             int pageID = index / maxBitSlicesPP;
             if(pageID != pageInit){
