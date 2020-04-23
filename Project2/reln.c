@@ -210,7 +210,7 @@ PageID addToRelation(Reln r, Tuple t)
     Count dataPageId = numberOfDataPages - 1;
     Count maxBitSlicesPP = maxBsigsPP(r);
     File bitSignatureFile = bsigFile(r);
-    Count bm = bsigBits(relation);
+    Count bm = bsigBits(r);
     for(int i = 0; i < m; i++){
         if(bitIsSet(queryPageSignature, i) == TRUE){
             int pageID = i / maxBitSlicesPP;
@@ -218,7 +218,7 @@ PageID addToRelation(Reln r, Tuple t)
             Bits tm = newBits(bm);
             Offset pos = i % maxBitSlicesPP;
             getBits(currentPage, pos, tm);
-            setBit(tm,numberOfDataPages-1);
+            setBit(tm,dataPageId);
             putBits(currentPage, pos, tm);
             putPage(bitSignatureFile, pageID, currentPage);
         }
