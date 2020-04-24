@@ -61,8 +61,7 @@ Status newRelation(char *name, Count nattrs, float pF,
     // each of which has length "bm" bits
 	//TODO
     for (int index = 0; index < pm; index++){
-        Count numberOfBsPages = nBsigPages(r)
-        Count lastPageIndex = numberOfBsPages - 1;
+        Count lastPageIndex = nBsigPages(r) - 1;
         File bitSignatureFile = bsigFile(r);
         Page currentPage = getPage(bitSignatureFile,lastPageIndex);
         Count maxBsPP = maxBsigsPP(r);
@@ -77,7 +76,7 @@ Status newRelation(char *name, Count nattrs, float pF,
         putBits(currentPage, pageNitems(currentPage), bitSignature);
         putPage(r->bsigf, lastPageIndex, currentPage);
         p->nbsigs++;
-        freeBits(bitslice);
+        freeBits(bitSignature);
     }
 
 	closeRelation(r);
