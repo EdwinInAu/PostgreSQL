@@ -63,7 +63,7 @@ void findPagesUsingPageSigs(Query q)
             getBits(currentPage, index, tmp);
             if(isSubset(queryPageSignature, tmp) == TRUE){
                 // 这里有可能存在问题
-                setBit(pages, pageId);
+                setBit(q->pages, pageId);
             }
             freeBits(tmp);
             q->nsigs++;

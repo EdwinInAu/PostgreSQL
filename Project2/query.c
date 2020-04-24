@@ -69,10 +69,6 @@ void scanAndDisplayMatchingTuples(Query q) {
     Tuple queryString = malloc(strlen(q->qstring) + 2);
     strcpy(queryString, q->qstring);
     assert(queryString != NULL);
-    pageIndex = 0;
-    q->ntuples = 0;
-    q->ntuppages = 0;
-    q->nfalse = 0;
 
     for (pageIndex = 0; pageIndex < npages; pageIndex++) {
         if (bitIsSet(pages, pageIndex) == FALSE) {
@@ -95,7 +91,7 @@ void scanAndDisplayMatchingTuples(Query q) {
         }
         q->ntuppages++;
     }
-    //free(queryString);
+    free(queryString);
 }
 
 // print statistics on query
