@@ -60,6 +60,26 @@ Status newRelation(char *name, Count nattrs, float pF,
 	// Create a file containing "pm" all-zeroes bit-strings,
     // each of which has length "bm" bits
 	//TODO
+    for (int index = 0; index < pm; index++){
+        Count numberOfBsPages = nBsigPages(r)
+        Count lastPageIndex = numberOfBsPages - 1;
+        File bitSignatureFile = bsigFile(r);
+        Page currentPage = getPage(bitSignatureFile,lastPageIndex);
+        Count maxBsPP = maxBsigsPP(r);
+        Bits bitSignature = newBits(bm);
+        if (pageNitems(currentPage) == maxBsPP) {
+            addPage(bitSignatureFile);
+            p->bsigNpages++;
+            lastPageIndex++;
+            currentPage = newPage();
+            if (currentPage == NULL) return NO_PAGE;
+        }
+        putBits(currentPage, pageNitems(currentPage), bitSignature);
+        putPage(r->bsigf, lastPageIndex, currentPage);
+        p->nbsigs++;
+        freeBits(bitslice);
+    }
+
 	closeRelation(r);
 	return 0;
 }
