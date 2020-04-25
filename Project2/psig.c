@@ -52,6 +52,7 @@ void findPagesUsingPageSigs(Query q) {
     int pageId;
     int index;
     Reln relation = q->rel;
+    RelnParams *rp = &(r->params);
     Bits queryPageSignature = makePageSig(relation, q->qstring);
     Bits pages = q->pages;
     unsetAllBits(pages);

@@ -58,7 +58,7 @@ void findPagesUsingTupSigs(Query q) {
     Count tupleSignaturePages = nTsigPages(relation);
     Count maxTupleSignaturesPP = maxTsigsPP(relation);
     Count m = tsigBits(relation);
-    Count maxTuplesPP = maxTuplesPP(relation);
+    Count maxTuplesPP = maxTupsPP(relation);
 
     for (pageId = 0; pageId < tupleSignaturePages; pageId++) {
         Page currentPage = getPage(tupleSignatureFile, pageId);
