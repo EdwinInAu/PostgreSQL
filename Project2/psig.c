@@ -52,10 +52,7 @@ void findPagesUsingPageSigs(Query q) {
     int pageId;
     int index;
     Reln relation = q->rel;
-    RelnParams *rp = &(r->params);
     Bits queryPageSignature = makePageSig(relation, q->qstring);
-    Bits pages = q->pages;
-    unsetAllBits(pages);
     File pageSignatureFile = psigFile(relation);
     Count pageSignaturePages = nPsigPages(relation);
     Count m = psigBits(relation);
@@ -67,7 +64,6 @@ void findPagesUsingPageSigs(Query q) {
             Bits tmp = newBits(m);
             getBits(currentPage, index, tmp);
             if (isSubset(queryPageSignature, tmp) == TRUE) {
-                // 这里有可能存在问题
                 setBit(q->pages, pageId * maxPageSigPP + index);
             }
             freeBits(tmp);
