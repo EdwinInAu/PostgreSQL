@@ -19,7 +19,7 @@ int checkQuery(Reln r, char *q)
 {
 	if (*q == '\0') return 0;
 	char *c;
-	unsigned int nattr = 1;
+	int nattr = 1;
 	for (c = q; *c != '\0'; c++)
 		if (*c == ',') nattr++;
 	return (nattr == nAttrs(r));
@@ -52,10 +52,46 @@ Query startQuery(Reln r, char *q, char sigs)
 // search for matching tuples and show each
 // accumulate query stats
 
-void scanAndDisplayMatchingTuples(Query q)
-{
-	assert(q != NULL);
-	//TODO
+void scanAndDisplayMatchingTuples(Query q) {
+    assert(q != NULL);
+    //TODO
+    int pageIndex;
+    int tupleIndex;
+    int count;
+
+    Reln relation = q->rel;
+    assert(relation != NULL);
+    // number of data pages
+    Count npages = nPages(relation);
+    // list of pages to examine
+    Bits pages = q->pages;
+    File file = dataFile(relation);
+    Tuple queryString = malloc(strlen(q->qstring) + 2);
+    strcpy(queryString, q->qstring);
+    assert(queryString != NULL);
+
+    for (pageIndex = 0; pageIndex < npages; pageIndex++) {
+        if (bitIsSet(pages, pageIndex) == FALSE) {
+            continue;
+        }
+        Page currentPage = getPage(file, pageIndex);
+        tupleIndex = 0;
+        Count pageItems = pageNitems(currentPage);
+        count = 0;
+        for (tupleIndex = 0; tupleIndex < pageItems; tupleIndex++) {
+            Tuple currentTuple = getTupleFromPage(relation, currentPage, tupleIndex);
+            if (tupleMatch(relation, currentTuple, queryString) == TRUE) {
+                showTuple(relation, currentTuple);
+                count++;
+            }
+            q->ntuples++;
+        }
+        if (count == 0) {
+            q->nfalse++;
+        }
+        q->ntuppages++;
+    }
+    free(queryString);
 }
 
 // print statistics on query
