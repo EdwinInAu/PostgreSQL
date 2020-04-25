@@ -46,10 +46,9 @@ Bits pageSigCodeword(char *attr_value, Count m, Count k)
     return cword;
 }
 
-void findPagesUsingPageSigs(Query q)
-{
-	assert(q != NULL);
-	//TODO
+void findPagesUsingPageSigs(Query q) {
+    assert(q != NULL);
+    //TODO
     int pageId;
     int index;
     Reln relation = q->rel;
@@ -59,15 +58,16 @@ void findPagesUsingPageSigs(Query q)
     File pageSignatureFile = psigFile(relation);
     Count pageSignaturePages = nPsigPages(relation);
     Count m = psigBits(relation);
+    Count maxPageSigPP = maxPsigsPP(relation);
     for (pageId = 0; pageId < pageSignaturePages; pageId++) {
         Page currentPage = getPage(pageSignatureFile, pageId);
         Count numberOfPageItems = pageNitems(currentPage);
-        for (index = 0; index < numberOfPageItems; index++){
+        for (index = 0; index < numberOfPageItems; index++) {
             Bits tmp = newBits(m);
             getBits(currentPage, index, tmp);
-            if(isSubset(queryPageSignature, tmp) == TRUE){
+            if (isSubset(queryPageSignature, tmp) == TRUE) {
                 // 这里有可能存在问题
-                setBit(q->pages, pageId);
+                setBit(q->pages, pageId * maxPageSigPP + index);
             }
             freeBits(tmp);
             q->nsigs++;

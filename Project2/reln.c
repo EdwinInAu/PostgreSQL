@@ -155,19 +155,17 @@ PageID addToRelation(Reln r, Tuple t)
 	rp->ntups++;  //written to disk in closeRelation()
 	putPage(r->dataf, pid, p);
 
-	// compute tuple signature and add to tsigf
-	
-	//TODO
+    // compute tuple signature and add to tsigf
+
+    //TODO
     Bits tupleSignature = makeTupleSig(r, t);
-//    Count numberOfTupleSignaturePages = nTsigPages(r);
     Count lastPageIndexTs = nTsigPages(r) - 1;
     File tupleSignatureFile = tsigFile(r);
     Page lastPageTs = getPage(tupleSignatureFile, lastPageIndexTs);
     Count maxTupleSignaturesPP = maxTsigsPP(r);
     Count pageNumberOfItems = pageNitems(lastPageTs);
-//    Count numberOfTupleSignatures =  nTsigs(r);
-    if(pageNumberOfItems == maxTupleSignaturesPP){
-//        有点问题
+
+    if (pageNumberOfItems == maxTupleSignaturesPP) {
         addPage(r->tsigf);
         Page newLastPage = newPage();
         if (newLastPage == NULL) {
@@ -176,12 +174,11 @@ PageID addToRelation(Reln r, Tuple t)
         lastPageIndexTs++;
         rp->tsigNpages++;
 
-        putBits(newLastPage, pageNitems(newLastPage),tupleSignature);
+        putBits(newLastPage, pageNitems(newLastPage), tupleSignature);
         addOneItem(newLastPage);
-        putPage(r->tsigf,lastPageIndexTs, newLastPage);
-    }
-    else{
-        putBits(lastPageTs, pageNumberOfItems,tupleSignature);
+        putPage(r->tsigf, lastPageIndexTs, newLastPage);
+    } else {
+        putBits(lastPageTs, pageNumberOfItems, tupleSignature);
         addOneItem(lastPageTs);
         putPage(r->tsigf, lastPageIndexTs, lastPageTs);
     }
@@ -189,8 +186,8 @@ PageID addToRelation(Reln r, Tuple t)
 
     // compute page signature and add to psigf
 
-	//TODO
-    Bits pageSignature =  makePageSig(r, t);
+    //TODO
+    Bits pageSignature = makePageSig(r, t);
     Count numberOfDataPages = nPages(r);
     Count numberOfPageSignatures = nPsigs(r);
     Count maxPageSignaturesPP = maxPsigsPP(r);
@@ -201,8 +198,8 @@ PageID addToRelation(Reln r, Tuple t)
     Count lastPageItems = pageNitems(lastPagePs);
     Count m = psigBits(r);
 
-    if(numberOfDataPages != numberOfPageSignatures){
-        if (lastPageItems == maxPageSignaturesPP){
+    if (numberOfDataPages != numberOfPageSignatures) {
+        if (lastPageItems == maxPageSignaturesPP) {
             addPage(r->psigf);
             rp->psigNpages++;
             lastPageIndexPs++;
@@ -213,39 +210,39 @@ PageID addToRelation(Reln r, Tuple t)
         addOneItem(lastPagePs);
         putPage(r->psigf, lastPageIndexPs, lastPagePs);
         rp->npsigs++;
-    }else{
+    } else {
         Offset position = lastPageItems - 1;
         Bits tmp = newBits(m);
-        getBits(lastPagePs,position, tmp);
+        getBits(lastPagePs, position, tmp);
         orBits(tmp, pageSignature);
         putBits(lastPagePs, position, tmp);
         putPage(r->psigf, lastPageIndexPs, lastPagePs);
         freeBits(tmp);
     }
 
-	// use page signature to update bit-slices
+    // use page signature to update bit-slices
 
-	//TODO
+    //TODO
     Bits queryPageSignature = makePageSig(r, t);
     Count dataPageId = nPsigs(r) - 1;
     Count maxBitSlicesPP = maxBsigsPP(r);
     File bitSignatureFile = bsigFile(r);
     Count bm = bsigBits(r);
-    for(int i = 0; i < psigBits(r); i++){
-        if(bitIsSet(queryPageSignature, i) == TRUE){
+    for (int i = 0; i < psigBits(r); i++) {
+        if (bitIsSet(queryPageSignature, i) == TRUE) {
             int pageID = i / maxBitSlicesPP;
             Page currentPage = getPage(bitSignatureFile, pageID);
             Bits tm = newBits(bm);
             Offset pos = i % maxBitSlicesPP;
             //有点问题
             getBits(currentPage, pos, tm);
-            setBit(tm,dataPageId);
+            setBit(tm, dataPageId);
             putBits(currentPage, pos, tm);
             putPage(r->bsigf, pageID, currentPage);
             freeBits(tm);
         }
     }
-	return nPages(r)-1;
+    return nPages(r) - 1;
 }
 
 // displays info about open Reln (for debugging)

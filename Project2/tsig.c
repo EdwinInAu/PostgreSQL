@@ -54,14 +54,12 @@ void findPagesUsingTupSigs(Query q) {
     int index;
     Reln relation = q->rel;
     Bits queryTupleSignature = makeTupleSig(relation, q->qstring);
-    Bits pages = q->pages;
-    unsetAllBits(pages);
     File tupleSignatureFile = tsigFile(relation);
-    // number of tsig pages
     Count tupleSignaturePages = nTsigPages(relation);
-    // max tuple signatures per page
     Count maxTupleSignaturesPP = maxTsigsPP(relation);
     Count m = tsigBits(relation);
+    Count maxTuplesPP = maxTuplesPP(relation);
+
     for (pageId = 0; pageId < tupleSignaturePages; pageId++) {
         Page currentPage = getPage(tupleSignatureFile, pageId);
         Count numberOfPageItems = pageNitems(currentPage);
@@ -71,7 +69,7 @@ void findPagesUsingTupSigs(Query q) {
             q->nsigs++;
             if (isSubset(queryTupleSignature, tmp) == TRUE) {
                 // 这里有可能存在问题
-                setBit(q->pages, (index + pageId * maxTupleSignaturesPP) / maxTupsPP(relation));
+                setBit(q->pages, (index + pageId * maxTupleSignaturesPP) / maxTuplesPP);
             }
             freeBits(tmp);
         }

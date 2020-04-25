@@ -18,8 +18,7 @@ void findPagesUsingBitSlices(Query q)
     Count maxBitSlicesPP = maxBsigsPP(relation);
     Count pm = psigBits(relation);
 	Count bm = bsigBits(relation);
-	Bits pages = newBits(bm);
-    setAllBits(pages);
+    setAllBits(q->pages);
     int pageInit = -10;
     for(int index = 0; index < pm; index++){
         if(bitIsSet(queryPageSignature, index) == TRUE) {
@@ -32,11 +31,11 @@ void findPagesUsingBitSlices(Query q)
             Bits tmp = newBits(bm);
             Offset position = index % maxBitSlicesPP;
             getBits(currentPage, position, tmp);
-            andBits(pages, tmp);
+            andBits(q->pages, tmp);
             freeBits(tmp);
+            // there is a problem
             q->nsigs++;
         }
     }
-    // 好像还缺个q->pages
 }
 
