@@ -35,8 +35,12 @@ Bits pageSigCodeword(char *attr_value, Count m, Count k)
     if (strcmp(attr_value, "?") != 0) {
         while (nbits < k) {
             int i = random() % m;
-            setBit(cword, i);
-            nbits++;
+            if (bitIsSet(cword,i) == FALSE)
+            {
+                /* code */
+                setBit(cword, i);
+                nbits++;
+            }
         }
     }
     return cword;

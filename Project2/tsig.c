@@ -20,11 +20,18 @@ Bits makeTupleSig(Reln r, Tuple t)
 	Count numberOfAttributes = nAttrs(r);
 	Count m = tsigBits(r);
 	Count k = codeBits(r);
-	char **tupleValues = tupleVals(r, t);
+	char ** tupleValues = tupleVals(r, t);
     Bits tupleSignature = newBits(m);
+    unsetAllBits(tupleSignature);
     for(i = 0; i < numberOfAttributes; i++){
+        if (strncmp(tupleValues[i],"?",1) != 0)
+        {
+            /* code */
         Bits codeWord = tupleSigCodeword(tupleValues[i], m, k);
         orBits(tupleSignature, codeWord);
+        freeBits(codeWord);
+        }
+        
     }
 	return tupleSignature;
 }
@@ -34,14 +41,19 @@ Bits tupleSigCodeword(char *attr_value, Count m, Count k)
 {
     int nbits = 0;
     Bits cword = newBits(m);
-    srandom(hash_any(attr_value, strlen(attr_value)));
-    if (strcmp(attr_value, "?") != 0) {
+    unsigned int hash_value = hash_any(attr_value, strlen(attr_value));
+    srandom(hash_value);
+    // if (strcmp(attr_value, "?") != 0) {
         while (nbits < k) {
             int i = random() % m;
-            setBit(cword, i);
-            nbits++;
+            if (bitIsSet(cword,i) == FALSE)
+            {
+                /* code */
+                setBit(cword, i);
+                nbits++;
+            }
         }
-    }
+    // }
     return cword;
 }
 
@@ -59,7 +71,7 @@ void findPagesUsingTupSigs(Query q)
     // number of tsig pages
     Count tupleSignaturePages = nTsigPages(relation);
     // max tuple signatures per page
-    // Count maxTupleSignaturesPP = maxTsigsPP(relation);
+    Count maxTupleSignaturesPP = maxTsigsPP(relation);
     Count m = tsigBits(relation);
     for (pageId = 0; pageId < tupleSignaturePages; pageId++) {
         Page currentPage = getPage(tupleSignatureFile, pageId);
@@ -67,12 +79,12 @@ void findPagesUsingTupSigs(Query q)
         for (index = 0; index < numberOfPageItems; index++){
             Bits tmp = newBits(m);
             getBits(currentPage, index, tmp);
+            q->nsigs++;
             if(isSubset(queryTupleSignature, tmp) == TRUE){
                 // 这里有可能存在问题
-                setBit(q->pages, pageId);
+                setBit(q->pages,(index+ pageId*maxTupleSignaturesPP)/maxTupsPP(relation));
             }
             freeBits(tmp);
-            q->nsigs++;
         }
         q->nsigpages++;
     }
