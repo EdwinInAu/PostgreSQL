@@ -11,60 +11,49 @@
 #include "bits.h"
 
 // make a tuple signature
-
-Bits makeTupleSig(Reln r, Tuple t)
-{
-	assert(r != NULL && t != NULL);
-	//TODO
-	int i;
-	Count numberOfAttributes = nAttrs(r);
-	Count m = tsigBits(r);
-	Count k = codeBits(r);
-	char ** tupleValues = tupleVals(r, t);
+Bits makeTupleSig(Reln r, Tuple t) {
+    assert(r != NULL && t != NULL);
+    //TODO
+    int i;
+    Count numberOfAttributes = nAttrs(r);
+    Count m = tsigBits(r);
+    Count k = codeBits(r);
+    char **tupleValues = tupleVals(r, t);
     Bits tupleSignature = newBits(m);
     unsetAllBits(tupleSignature);
-    for(i = 0; i < numberOfAttributes; i++){
-        if (strncmp(tupleValues[i],"?",1) != 0)
-        {
-            /* code */
-        Bits codeWord = tupleSigCodeword(tupleValues[i], m, k);
-        orBits(tupleSignature, codeWord);
-        freeBits(codeWord);
+    for (i = 0; i < numberOfAttributes; i++) {
+        if (strcmp(tupleValues[i], "?") != 0) {
+            Bits codeWord = tupleSigCodeword(tupleValues[i], m, k);
+            orBits(tupleSignature, codeWord);
+            freeBits(codeWord);
         }
-        
     }
-	return tupleSignature;
+    return tupleSignature;
 }
 
 // borrow from 7th lecture notes
-Bits tupleSigCodeword(char *attr_value, Count m, Count k)
-{
+Bits tupleSigCodeword(char *attr_value, Count m, Count k) {
     int nbits = 0;
     Bits cword = newBits(m);
     unsigned int hash_value = hash_any(attr_value, strlen(attr_value));
     srandom(hash_value);
-    // if (strcmp(attr_value, "?") != 0) {
-        while (nbits < k) {
-            int i = random() % m;
-            if (bitIsSet(cword,i) == FALSE)
-            {
-                /* code */
-                setBit(cword, i);
-                nbits++;
-            }
+    while (nbits < k) {
+        int i = random() % m;
+        if (bitIsSet(cword, i) == FALSE) {
+            setBit(cword, i);
+            nbits++;
         }
-    // }
+    }
     return cword;
 }
 
-void findPagesUsingTupSigs(Query q)
-{
-	assert(q != NULL);
-	//TODO
-	int pageId;
-	int index;
-	Reln relation = q->rel;
-	Bits queryTupleSignature = makeTupleSig(relation, q->qstring);
+void findPagesUsingTupSigs(Query q) {
+    assert(q != NULL);
+    //TODO
+    int pageId;
+    int index;
+    Reln relation = q->rel;
+    Bits queryTupleSignature = makeTupleSig(relation, q->qstring);
     Bits pages = q->pages;
     unsetAllBits(pages);
     File tupleSignatureFile = tsigFile(relation);
@@ -76,19 +65,21 @@ void findPagesUsingTupSigs(Query q)
     for (pageId = 0; pageId < tupleSignaturePages; pageId++) {
         Page currentPage = getPage(tupleSignatureFile, pageId);
         Count numberOfPageItems = pageNitems(currentPage);
-        for (index = 0; index < numberOfPageItems; index++){
+        for (index = 0; index < numberOfPageItems; index++) {
             Bits tmp = newBits(m);
             getBits(currentPage, index, tmp);
             q->nsigs++;
-            if(isSubset(queryTupleSignature, tmp) == TRUE){
+            if (isSubset(queryTupleSignature, tmp) == TRUE) {
                 // 这里有可能存在问题
-                setBit(q->pages,(index+ pageId*maxTupleSignaturesPP)/maxTupsPP(relation));
+                setBit(q->pages, (index + pageId * maxTupleSignaturesPP) / maxTupsPP(relation));
             }
             freeBits(tmp);
         }
         q->nsigpages++;
     }
     // The printf below is primarily for debugging
-	// Remove it before submitting this function
-	printf("Matched Pages:"); showBits(q->pages); putchar('\n');
+    // Remove it before submitting this function
+    printf("Matched Pages:");
+    showBits(q->pages);
+    putchar('\n');
 }

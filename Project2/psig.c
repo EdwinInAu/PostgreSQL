@@ -31,13 +31,13 @@ Bits pageSigCodeword(char *attr_value, Count m, Count k)
 {
     int  nbits = 0;
     Bits cword = newBits(m);
-    srandom(hash_any(attr_value, strlen(attr_value)));
+    unsigned int hash_value = hash_any(attr_value, strlen(attr_value));
+    srandom(hash_value);
     if (strcmp(attr_value, "?") != 0) {
         while (nbits < k) {
             int i = random() % m;
             if (bitIsSet(cword,i) == FALSE)
             {
-                /* code */
                 setBit(cword, i);
                 nbits++;
             }
