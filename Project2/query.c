@@ -85,7 +85,6 @@ void scanAndDisplayMatchingTuples(Query q) {
         }
         q->ntuppages++;
     }
-    free(queryString);
 }
 
 // print statistics on query
