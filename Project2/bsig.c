@@ -38,11 +38,15 @@ void findPagesUsingBitSlices(Query q)
             q->nsigs++;
         }
     }
+    // add
+    freeBits(queryPageSignature);
 
     for (int i = 0; i < nPages(relation); i++){
         if(bitIsSet(matching,i)){
             setBit(q->pages,i);
         }
     }
+    // add
+    freeBits(matching);
 }
 

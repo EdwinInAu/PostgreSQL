@@ -78,12 +78,16 @@ void scanAndDisplayMatchingTuples(Query q) {
                 showTuple(relation, currentTuple);
                 count++;
             }
+            // add
+            free(currentTuple);
             q->ntuples++;
         }
         if (count == 0) {
             q->nfalse++;
         }
         q->ntuppages++;
+        // add
+        free(currentPage);
     }
 }
 

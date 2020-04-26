@@ -78,6 +78,8 @@ Status newRelation(char *name, Count nattrs, float pF,
         addOneItem(currentPage);
         putPage(r->bsigf, lastPageIndex, currentPage);
         p->nbsigs++;
+        // add
+        free(currentPage);
         freeBits(bitSignature);
     }
 
@@ -184,6 +186,9 @@ PageID addToRelation(Reln r, Tuple t)
         addOneItem(lastPageTs);
         putPage(r->tsigf, lastPageIndexTs, lastPageTs);
     }
+    // add
+    free(lastPageTs);
+    freeBits(tupleSignature);
     rp->ntsigs++;
 
     // compute page signature and add to psigf
@@ -222,6 +227,9 @@ PageID addToRelation(Reln r, Tuple t)
         putPage(r->psigf, lastPageIndexPs, lastPagePs);
         freeBits(tmp);
     }
+    // add
+    free(lastPagePs);
+    freeBits(pageSignature);
 
     // use page signature to update bit-slices
 
@@ -244,6 +252,8 @@ PageID addToRelation(Reln r, Tuple t)
             freeBits(tm);
         }
     }
+    // add
+    freeBits(queryPageSignature);
     return nPages(r) - 1;
 }
 

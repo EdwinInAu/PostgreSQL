@@ -22,6 +22,7 @@ Bits makePageSig(Reln r, Tuple t)
     for(i = 0; i < numberOfAttributes; i++){
         Bits codeWord = pageSigCodeword(tupleValues[i], m, k);
         orBits(pageSignature, codeWord);
+        freeBits(codeWord);
     }
     return pageSignature;
 }
@@ -69,7 +70,11 @@ void findPagesUsingPageSigs(Query q) {
             freeBits(tmp);
             q->nsigs++;
         }
+        // add
+        free(currentPage);
         q->nsigpages++;
     }
+    // add
+    freeBits(queryPageSignature);
 }
 
