@@ -75,8 +75,4 @@ void findPagesUsingTupSigs(Query q) {
         }
         q->nsigpages++;
     }
-    // The printf below is primarily for debugging
-    // Remove it before submitting this function
-    showBits(q->pages);
-    putchar('\n');
 }
