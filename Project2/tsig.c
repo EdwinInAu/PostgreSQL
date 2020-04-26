@@ -77,6 +77,6 @@ void findPagesUsingTupSigs(Query q) {
 //        free(currentPage);
         q->nsigpages++;
     }
-    // add
+    // add ??
     freeBits(queryTupleSignature);
 }

@@ -74,7 +74,7 @@ void findPagesUsingPageSigs(Query q) {
 //        free(currentPage);
         q->nsigpages++;
     }
-    // add
+    // add ??
     freeBits(queryPageSignature);
 }
 
