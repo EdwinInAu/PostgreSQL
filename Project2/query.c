@@ -60,7 +60,6 @@ void scanAndDisplayMatchingTuples(Query q) {
     int count;
 
     Reln relation = q->rel;
-    RelnParams *rp = &(relation->params);
     assert(relation != NULL);
     Count npages = nPages(relation);
     Bits pages = q->pages;
