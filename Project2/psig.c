@@ -71,10 +71,11 @@ void findPagesUsingPageSigs(Query q) {
             q->nsigs++;
         }
         // add
-//        free(currentPage);
+        free(currentPage);
         q->nsigpages++;
     }
     // add ??
     freeBits(queryPageSignature);
+    closeRelation(relation);
 }
 

@@ -86,10 +86,10 @@ void scanAndDisplayMatchingTuples(Query q) {
             q->nfalse++;
         }
         q->ntuppages++;
-        closeRelation(relation);
         // add
-//        free(currentPage);
+        free(currentPage);
     }
+    closeRelation(relation);
 }
 
 // print statistics on query
