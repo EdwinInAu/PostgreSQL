@@ -117,15 +117,15 @@ void setBit(Bits b, int position) {
 void setAllBits(Bits b) {
     assert(b != NULL);
     //TODO
-    // for (int i = 0; i <= b->nbytes - 1; i++) {
-    //     for (int j = 0; j <= 7; j++) {
-    //         b->bitstring[i] = b->bitstring[i] | (1 << j);
-    //     }
-    // }
-    int index;
-    for (index = 0; index <= b->nbits - 1; index++) {
-        setBit(b, index);
+    for (int i = 0; i <= b->nbytes - 1; i++) {
+        for (int j = 0; j <= 7; j++) {
+            b->bitstring[i] = b->bitstring[i] | (1 << j);
+        }
     }
+    // int index;
+    // for (index = 0; index <= b->nbits - 1; index++) {
+    //     setBit(b, index);
+    // }
 }
 
 // set the bit at position to 0
@@ -161,15 +161,15 @@ void unsetBit(Bits b, int position) {
 void unsetAllBits(Bits b) {
     assert(b != NULL);
     //TODO
-    // for (int i = 0; i <= b->nbytes - 1; i++) {
-    //     for (int j = 0; j <= 7; j++) {
-    //         b->bitstring[i] = b->bitstring[i] & ~(1 << j);
-    //     }
-    // }
-    int index;
-    for (index = 0; index <= b->nbits - 1; index++) {
-        unsetBit(b, index);
+    for (int i = 0; i <= b->nbytes - 1; i++) {
+        for (int j = 0; j <= 7; j++) {
+            b->bitstring[i] = b->bitstring[i] & ~(1 << j);
+        }
     }
+    // int index;
+    // for (index = 0; index <= b->nbits - 1; index++) {
+    //     unsetBit(b, index);
+    // }
     // memset(&(b->bitstring[0]), 0, b->nbytes);
 }
 
