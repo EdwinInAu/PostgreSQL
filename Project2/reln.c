@@ -255,7 +255,7 @@ PageID addToRelation(Reln r, Tuple t)
     }
     // add
     freeBits(queryPageSignature);
-    closeRelation(r);
+//    closeRelation(r);
     return nPages(r) - 1;
 }
 
