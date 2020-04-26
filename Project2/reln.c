@@ -80,10 +80,10 @@ Status newRelation(char *name, Count nattrs, float pF,
         p->nbsigs++;
         // add
         free(currentPage);
-        freeBits(bitSignature);
     }
-
-	closeRelation(r);
+    // add
+    freeBits(bitSignature);
+    closeRelation(r);
 	return 0;
 }
 

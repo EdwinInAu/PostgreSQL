@@ -74,7 +74,7 @@ void findPagesUsingTupSigs(Query q) {
             freeBits(tmp);
         }
         // add
-        free(currentPage);
+//        free(currentPage);
         q->nsigpages++;
     }
     // add

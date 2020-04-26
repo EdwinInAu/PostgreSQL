@@ -79,7 +79,7 @@ void scanAndDisplayMatchingTuples(Query q) {
                 count++;
             }
             // add
-            free(currentTuple);
+//            free(currentTuple);
             q->ntuples++;
         }
         if (count == 0) {
