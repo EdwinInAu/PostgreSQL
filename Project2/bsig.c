@@ -48,6 +48,6 @@ void findPagesUsingBitSlices(Query q)
     freeBits(queryPageSignature);
     // add
     freeBits(matching);
-    closeRelation(relation);
+//    closeRelation(relation);
 }
 

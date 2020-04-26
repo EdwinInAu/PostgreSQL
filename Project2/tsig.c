@@ -79,5 +79,5 @@ void findPagesUsingTupSigs(Query q) {
     }
     // add ??
     freeBits(queryTupleSignature);
-    closeRelation(relation);
+//    closeRelation(relation);
 }

@@ -76,6 +76,6 @@ void findPagesUsingPageSigs(Query q) {
     }
     // add ??
     freeBits(queryPageSignature);
-    closeRelation(relation);
+//    closeRelation(relation);
 }
 
