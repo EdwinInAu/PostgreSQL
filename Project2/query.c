@@ -58,38 +58,40 @@ void scanAndDisplayMatchingTuples(Query q) {
     int pageIndex;
     int tupleIndex;
     int count;
-
+    // get relation
     Reln relation = q->rel;
     assert(relation != NULL);
+    // number of data pages
     Count npages = nPages(relation);
     Bits pages = q->pages;
+    // data file
     File file = dataFile(relation);
 
     for (pageIndex = 0; pageIndex < npages; pageIndex++) {
+        // if current page index is 1 in bits pages
         if (bitIsSet(pages, pageIndex) == FALSE) {
             continue;
         }
         Page currentPage = getPage(file, pageIndex);
         Count pageItems = pageNitems(currentPage);
         count = 0;
+        // traverse current page whole tuples
         for (tupleIndex = 0; tupleIndex < pageItems; tupleIndex++) {
             Tuple currentTuple = getTupleFromPage(relation, currentPage, tupleIndex);
+            // if tuple matches query
             if (tupleMatch(relation, currentTuple, q->qstring) == TRUE) {
                 showTuple(relation, currentTuple);
                 count++;
             }
-            // add
-//            free(currentTuple);
             q->ntuples++;
         }
+        // if count is equl to 0: no tuple matches query
         if (count == 0) {
             q->nfalse++;
         }
         q->ntuppages++;
-        // add
         free(currentPage);
     }
-//    closeRelation(relation);
 }
 
 // print statistics on query
