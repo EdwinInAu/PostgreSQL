@@ -89,7 +89,7 @@ void scanAndDisplayMatchingTuples(Query q) {
         // add
         free(currentPage);
     }
-    closeRelation(relation);
+//    closeRelation(relation);
 }
 
 // print statistics on query
